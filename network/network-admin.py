@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, sys
+import os, sys, getopt
 
 
 def subnet(name):
@@ -40,7 +40,20 @@ def create_cali_net(name):
     ]
     [os.system(cmd) for cmd in cmd_list]
 
+def delete_cali_net(name):
+    create_pool_yaml(name)
+    cmd_list = [
+        "docker network rm {name}".format(name=name),
+        "calicoctl delete -f ippool-{name}.yaml".format(name=name)
+    ]
+    [os.system(cmd) for cmd in cmd_list]
 
 if __name__ == "__main__":
-    nets = sys.argv[1:]
-    [create_cali_net(net) for net in nets]
+    optlist, nets = getopt.getopt(sys.argv[1:], "cd")
+    keys = dict(optlist).keys
+    if '-c' in keys:
+        [create_cali_net(n) for n in nets]
+    elif '-d' in keys:
+        [delete_cali_net(n) for n in nets]
+    else:
+        print("usage: cmd [-c | -d] network")
