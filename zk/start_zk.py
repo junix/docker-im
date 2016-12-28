@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import sys, os
 
+
 def generate_server_conf(instances):
     conf_list = ["server.%d=zk%d:2888:3888" % (i, i) for i in range(1, len(instances) + 1)]
     return ' '.join(conf_list)
+
 
 def start_zk_cmd(index, conf):
     return \
@@ -20,6 +22,7 @@ def start_zk_cmd(index, conf):
 def ssh_cmd(host, cmd):
     return "ssh {host} \"{cmd}\"".format(host=host, cmd=cmd)
 
+
 if __name__ == "__main__":
     instances = sys.argv[1:]
     if len(instances) == 0:
@@ -27,5 +30,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     conf = generate_server_conf(instances)
-    for i, a in enumerate(instances):
-        os.system(ssh_cmd(i,start_zk_cmd(i, conf)))
+    for index, host in enumerate(instances):
+        os.system(ssh_cmd(host, start_zk_cmd(index, conf)))
