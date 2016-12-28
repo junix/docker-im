@@ -49,11 +49,11 @@ def delete_cali_net(name):
     [os.system(cmd) for cmd in cmd_list]
 
 if __name__ == "__main__":
-    optlist, nets = getopt.getopt(sys.argv[1:], "cd")
+    optlist, nets = getopt.getopt(sys.argv[1:], "cd", ["create", "delete"])
     keys = dict(optlist).keys()
-    if '-c' in keys:
+    if '-c' in keys or '--create' in keys:
         [create_cali_net(n) for n in nets]
-    elif '-d' in keys:
+    elif '-d' in keys or '--delete' in keys:
         [delete_cali_net(n) for n in nets]
     else:
-        print("usage: cmd [-c | -d] network")
+        print("usage: cmd [-c | -d] networks")
