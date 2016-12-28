@@ -10,7 +10,7 @@ def generate_server_conf(instances):
 def start_zk_cmd(index, conf):
     return \
         "docker run --restart always\
-         --network starfish\
+         --network zookeeper\
          --ip 192.0.2.{index}\
          --name zk{index}\
          --env  ZOO_MY_ID={index}\
