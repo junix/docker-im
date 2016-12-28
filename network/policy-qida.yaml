@@ -1,9 +1,0 @@
-- apiVersion: v1
-  kind: policy
-  metadata:
-    name: qida
-  spec:
-    ingress:
-    - action: allow
-    egress:
-    - action: allow
