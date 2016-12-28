@@ -12,7 +12,8 @@ def docker_cmd(gid, pid):
         --env GROUP_ID={gid} \
         --env NODE_ID={pid} \
         -d \
-        junix/maxwell_master".format(gid=gid, index=pid+10, pid=pid)
+        junix/maxwell_master".format(gid=gid, index=100 + 10 * gid + pid, pid=pid)
+
 
 def ssh_cmd(host, cmd):
     return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
