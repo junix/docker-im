@@ -33,12 +33,11 @@ def ssh_cmd(host, cmd):
 
 if __name__ == "__main__":
     optlist, hosts = getopt.getopt(sys.argv[1:], 'n:')
-    if hosts == [] or optlist == []:
-        print("usage:cmd -n nid host_to_deploy")
+    if hosts == []:
+        print("usage:cmd host_to_deploy")
         sys.exit(1)
-    nid = int(dict(optlist).get('-n'))
     for index, host in enumerate(hosts):
         pid = index + 1
-        cmd = ssh_cmd(host, docker_cmd(nid))
+        cmd = ssh_cmd(host, docker_cmd(pid))
         print(cmd)
         os.system(cmd)
