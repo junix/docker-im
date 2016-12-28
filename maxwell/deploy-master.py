@@ -24,7 +24,7 @@ if __name__ == "__main__":
     if hosts == [] or optlist == []:
         print("usage: cmd --group_id=gid hosts")
         sys.exit(1)
-    gid = dict(optlist).get('-g')
+    gid = int(dict(optlist).get('-g'))
     for index, host in enumerate(hosts):
         pid = index + 1
         cmd = ssh_cmd(host, docker_cmd(gid, pid))
