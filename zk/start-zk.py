@@ -16,11 +16,11 @@ def start_zk_cmd(index, conf):
          --env  ZOO_MY_ID={index}\
          --env ZOO_SERVERS=\"{conf}\"\
          -d\
-         zookeeper:3.4.9".format(index=index, conf=conf)
+         zookeeper:3.4.9".format(index=index+1, conf=conf)
 
 
 def ssh_cmd(host, cmd):
-    return "ssh {host} \"{cmd}\"".format(host=host, cmd=cmd)
+    return "ssh {host} \'{cmd}\'".format(host=host, cmd=cmd)
 
 
 if __name__ == "__main__":
