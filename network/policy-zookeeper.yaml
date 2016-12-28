@@ -1,0 +1,9 @@
+- apiVersion: v1
+  kind: policy
+  metadata:
+    name: zookeeper
+  spec:
+    ingress:
+    - action: allow
+    egress:
+    - action: allow

@@ -1,7 +1,7 @@
 - apiVersion: v1
   kind: policy
   metadata:
-    name: starfish
+    name: lecai
   spec:
     ingress:
     - action: allow
