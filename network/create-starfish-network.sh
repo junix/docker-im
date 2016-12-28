@@ -5,5 +5,5 @@ calicoctl apply -f policy-starfish.yaml
 docker network create \
   --driver calico \
   --ipam-driver calico-ipam \
-  --subnet=192.0.2.0/24 \
+  --subnet=192.168.0.0/16 \
   starfish
