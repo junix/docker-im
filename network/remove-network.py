@@ -17,7 +17,7 @@ def subnet(name):
 
 def create_pool_yaml(name):
     spec = \
-""" - apiVersion: v1
+"""- apiVersion: v1
   kind: ipPool
   metadata:
     cidr: {subnet}/24
