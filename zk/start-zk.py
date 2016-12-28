@@ -20,7 +20,7 @@ def start_zk_cmd(index, conf):
 
 
 def ssh_cmd(host, cmd):
-    return "ssh {host} \'{cmd}\'".format(host=host, cmd=cmd)
+    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
 
 
 if __name__ == "__main__":
