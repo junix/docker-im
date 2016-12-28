@@ -12,6 +12,8 @@ def subnet(name):
         return "192.0.4.0"
     elif name == "lecai":
         return "192.0.5.0"
+    elif name == "conv_store":
+        return "192.0.7.0"
     else:
         raise ValueError("unknown net:" + name)
 
