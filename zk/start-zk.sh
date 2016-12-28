@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
-START_ZK1='docker run --restart always --network starfish --ip 192.0.2.1 -d --env  ZOO_MY_ID=1 --name zk1 --env ZOO_SERVERS="server.1=zk1:2888:3888 server.2=zk2:2888:3888 server.3=zk3:2888:3888" zookeeper:3.4.9'
+ZOO_SERVERS="server.1=zk1:2888:3888 server.2=zk2:2888:3888 server.3=zk3:2888:3888"
 
-START_ZK2='docker run --restart always --network starfish --ip 192.0.2.2 -d --env  ZOO_MY_ID=2 --name zk2 --env ZOO_SERVERS="server.1=zk1:2888:3888 server.2=zk2:2888:3888 server.3=zk3:2888:3888" zookeeper:3.4.9'
+IMAGE="zookeeper:3.4.9"
 
-START_ZK3='docker run --restart always --network starfish --ip 192.0.2.3 -d --env  ZOO_MY_ID=3 --name zk3 --env ZOO_SERVERS="server.1=zk1:2888:3888 server.2=zk2:2888:3888 server.3=zk3:2888:3888" zookeeper:3.4.9'
+function start_zk_cmd {
+ "docker run --restart always \
+ --network starfish \
+ --ip 192.0.2.$1 \
+ --name zk1 \
+ --env  ZOO_MY_ID=$1 \
+ --env ZOO_SERVERS=\"$ZOO_SERVERS\" \
+ -d \
+ $IMAGE"
+}
 
-ssh in-205-gd $START_ZK1
-ssh in-204-gd $START_ZK2
-ssh in-902-bj $START_ZK3
+ssh in-205-gd $(start_zk_cmd 1)
+ssh in-204-gd $(start_zk_cmd 2)
+ssh in-902-bj $(start_zk_cmd 3)
 
