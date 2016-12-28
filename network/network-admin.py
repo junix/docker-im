@@ -50,7 +50,7 @@ def delete_cali_net(name):
 
 if __name__ == "__main__":
     optlist, nets = getopt.getopt(sys.argv[1:], "cd")
-    keys = dict(optlist).keys
+    keys = dict(optlist).keys()
     if '-c' in keys:
         [create_cali_net(n) for n in nets]
     elif '-d' in keys:
