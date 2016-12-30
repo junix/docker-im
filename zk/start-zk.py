@@ -60,6 +60,6 @@ if __name__ == "__main__":
 
     conf = generate_server_conf(instances)
     for index, host in enumerate(instances):
-        cmd = ssh_cmd(host, start_zk_cmd(index, conf))
+        cmd = ssh_cmd(host, start_zk_cmd(index+1, conf))
         print(cmd)
         os.system(cmd)
