@@ -25,7 +25,7 @@ def data_dir_map(index):
 
 
 def data_log_dir_map(index):
-    dir = os.getenv("DATA_LOG_DIR")
+    dir = os.getenv("LOG_DIR")
     if dir is None:
         return ''
     else:
