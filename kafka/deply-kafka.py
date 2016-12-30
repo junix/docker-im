@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, os, getopt
+import sys, os, getopt, re
 
 
 def instance_name(index):
@@ -35,20 +35,21 @@ def data_log_dir_map(index):
 
 
 def start_kafka_cmd(index):
-    return \
-        "docker run --restart always\
-         --network kafka\
-         --ip 192.0.8.{index}\
-         --name kafka{index}\
-         --env BROKER_ID={index}\
-         {zookeeper_env} \
-         {data_dir} \
-         {data_log_dir}\
-         -d junix/kafka".format(
-            index=index,
-            zookeeper_env=zookeeper_env(),
-            data_dir=data_dir_map(index),
-            data_log_dir=data_log_dir_map(index))
+    pattern = "docker run --restart always\
+             --network kafka\
+             --ip 192.0.8.{index}\
+             --name kafka{index}\
+             --env BROKER_ID={index}\
+             {zookeeper_env}\
+             {data_dir}\
+             {data_log_dir}\
+             -d junix/kafka"
+    raw = pattern.format(
+        index=index,
+        zookeeper_env=zookeeper_env(),
+        data_dir=data_dir_map(index),
+        data_log_dir=data_log_dir_map(index))
+    return re.sub(r"""\s{2,}""", ' ', raw)
 
 
 def ssh_cmd(host, cmd):
@@ -56,7 +57,7 @@ def ssh_cmd(host, cmd):
 
 
 if __name__ == "__main__":
-    options,instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
+    options, instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
     if len(instances) == 0:
         print("usage:cmd [host]")
         sys.exit(1)
