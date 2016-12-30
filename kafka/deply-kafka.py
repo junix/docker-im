@@ -29,7 +29,7 @@ def data_log_dir_map(index):
 def start_kafka_cmd(index):
     return \
         "docker run --restart always\
-         --network zookeeper\
+         --network kafka\
          --ip 192.0.8.{index}\
          --name kafka{index}\
          --env BROKER_ID={index}\
