@@ -62,4 +62,4 @@ if __name__ == "__main__":
     for index, host in enumerate(instances):
         cmd = ssh_cmd(host, start_zk_cmd(index, conf))
         print(cmd)
-        # os.system(cmd)
+        os.system(cmd)
