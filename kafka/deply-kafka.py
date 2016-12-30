@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, os
+import sys, os, getopt
 
 
 def instance_name(index):
@@ -56,12 +56,14 @@ def ssh_cmd(host, cmd):
 
 
 if __name__ == "__main__":
-    instances = sys.argv[1:]
+    options,instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
     if len(instances) == 0:
         print("usage:cmd [host]")
         sys.exit(1)
 
     for index, host in enumerate(instances):
         cmd = ssh_cmd(host, start_kafka_cmd(index + 1))
-        print(cmd)
-        os.system(cmd)
+        if '--dryrun' in dict(options).keys():
+            print(cmd)
+        else:
+            os.system(cmd)
