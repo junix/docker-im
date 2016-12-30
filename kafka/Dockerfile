@@ -1,5 +1,6 @@
 FROM java:openjdk-8-jre
 ENV ZOOKEEPER "192.0.2.1:2181,192.0.2.2:2181,192.0.2.3:2181,192.0.2.4:2181,192.0.2.5:2181"
+ENV CLUSTER_NAME "kafka"
 RUN set -ex \
     && wget http://mirrors.hust.edu.cn/apache/kafka/0.8.2.1/kafka_2.9.1-0.8.2.1.tgz \
     && tar xzvf kafka_2.9.1-0.8.2.1.tgz \

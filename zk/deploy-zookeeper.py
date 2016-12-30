@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, os
+import sys, os, getopt
 
 
 def generate_server_conf(instances):
@@ -53,13 +53,15 @@ def ssh_cmd(host, cmd):
 
 
 if __name__ == "__main__":
-    instances = sys.argv[1:]
+    options, instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
     if len(instances) == 0:
-        print("usage:cmd [host]")
+        print("usage:./deploy-zk.py [--dryrun] hosts")
         sys.exit(1)
 
     conf = generate_server_conf(instances)
     for index, host in enumerate(instances):
-        cmd = ssh_cmd(host, start_zk_cmd(index+1, conf))
-        print(cmd)
-        os.system(cmd)
+        cmd = ssh_cmd(host, start_zk_cmd(index + 1, conf))
+        if '--dryrun' in dict(options).keys():
+            print(cmd)
+        else:
+            os.system(cmd)

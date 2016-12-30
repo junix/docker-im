@@ -6,6 +6,7 @@ then
 fi
 
 sed -i "s/{{HOSTNAME}}/${HOSTNAME}/g" /app/config/*
+sed -i "s/{{CLUSTER_NAME}}/${CLUSTER_NAME}/g" /app/config/*
 sed -i "s/{{BROKER_ID}}/${BROKER_ID}/g" /app/config/*
 sed -i "s/{{ZOOKEEPER}}/${ZOOKEEPER}/g" /app/config/*
 
