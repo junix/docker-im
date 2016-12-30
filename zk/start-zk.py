@@ -7,20 +7,28 @@ def generate_server_conf(instances):
     return ' '.join(conf_list)
 
 
-def data_dir_map():
+def instance_name(index):
+    return "zk{index}".format(index=index)
+
+
+def data_dir_map(index):
     dir = os.getenv("DATA_DIR")
     if dir is None:
         return ''
     else:
-        return "-v {dir}:/data".format(dir=dir)
+        return "-v {dir}/{instance}/data".format(
+            dir=dir,
+            instance=instance_name(index))
 
 
-def data_log_dir_map():
+def data_log_dir_map(index):
     dir = os.getenv("DATA_LOG_DIR")
     if dir is None:
         return ''
     else:
-        return "-v {dir}:/datalog".format(dir=dir)
+        return "-v {dir}/{instance}/datalog".format(
+            dir=dir,
+            instance=instance_name(index))
 
 
 def start_zk_cmd(index, conf):
@@ -36,8 +44,8 @@ def start_zk_cmd(index, conf):
          zookeeper:3.4.9".format(
             index=index + 1,
             conf=conf,
-            data_dir=data_dir_map(),
-            data_log_dir=data_log_dir_map())
+            data_dir=data_dir_map(index),
+            data_log_dir=data_log_dir_map(index))
 
 
 def ssh_cmd(host, cmd):
@@ -52,4 +60,6 @@ if __name__ == "__main__":
 
     conf = generate_server_conf(instances)
     for index, host in enumerate(instances):
-        os.system(ssh_cmd(host, start_zk_cmd(index, conf)))
+        cmd = ssh_cmd(host, start_zk_cmd(index, conf))
+        print(cmd)
+        # os.system(cmd)
