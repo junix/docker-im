@@ -6,6 +6,14 @@ def instance_name(index):
     return "kafka{index}".format(index=index)
 
 
+def zookeeper_env():
+    zk_conn = os.getenv("ZOOKEEPER")
+    if zk_conn is None:
+        return ''
+    else:
+        return "--env ZOOKEEPER={zk}".format(zk=zk_conn)
+
+
 def data_dir_map(index):
     dir = os.getenv("DATA_DIR")
     if dir is None:
@@ -33,9 +41,12 @@ def start_kafka_cmd(index):
          --ip 192.0.8.{index}\
          --name kafka{index}\
          --env BROKER_ID={index}\
-         {data_dir} {data_log_dir}\
+         {zookeeper_env} \
+         {data_dir} \
+         {data_log_dir}\
          -d junix/kafka".format(
             index=index,
+            zookeeper_env=zookeeper_env(),
             data_dir=data_dir_map(index),
             data_log_dir=data_log_dir_map(index))
 
