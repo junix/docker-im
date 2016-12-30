@@ -16,7 +16,7 @@ def data_dir_map(index):
     if dir is None:
         return ''
     else:
-        return "-v {dir}/{instance}/data".format(
+        return "-v {dir}/{instance}:/data".format(
             dir=dir,
             instance=instance_name(index))
 
@@ -26,7 +26,7 @@ def data_log_dir_map(index):
     if dir is None:
         return ''
     else:
-        return "-v {dir}/{instance}/datalog".format(
+        return "-v {dir}/{instance}:/datalog".format(
             dir=dir,
             instance=instance_name(index))
 
