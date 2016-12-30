@@ -12,4 +12,6 @@ RUN set -ex \
  ADD config/server.properties /app/config/server.properties
  ADD entry.sh /entry.sh
 
+ RUN chmod +x /entry.sh
+
  CMD ["/entry.sh"]
