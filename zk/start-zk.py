@@ -7,6 +7,22 @@ def generate_server_conf(instances):
     return ' '.join(conf_list)
 
 
+def data_dir_map():
+    dir = os.getenv("DATA_DIR")
+    if dir is None:
+        return ''
+    else:
+        return "-v {dir}:/data".format(dir=dir)
+
+
+def data_log_dir_map():
+    dir = os.getenv("DATA_LOG_DIR")
+    if dir is None:
+        return ''
+    else:
+        return "-v {dir}:/datalog".format(dir=dir)
+
+
 def start_zk_cmd(index, conf):
     return \
         "docker run --restart always\
@@ -15,8 +31,13 @@ def start_zk_cmd(index, conf):
          --name zk{index}\
          --env  ZOO_MY_ID={index}\
          --env ZOO_SERVERS=\"{conf}\"\
-         -d\
-         zookeeper:3.4.9".format(index=index+1, conf=conf)
+         {data_dir} {data_log_dir}\
+         -d \
+         zookeeper:3.4.9".format(
+            index=index + 1,
+            conf=conf,
+            data_dir=data_dir_map(),
+            data_log_dir=data_log_dir_map())
 
 
 def ssh_cmd(host, cmd):
