@@ -5,6 +5,7 @@ then
     BROKER_ID=1
 fi
 
+sed -i "s/{{HOSTNAME}}/${HOSTNAME}/g" /app/config/*
 sed -i "s/{{BROKER_ID}}/${BROKER_ID}/g" /app/config/*
 sed -i "s/{{ZOOKEEPER}}/${ZOOKEEPER}/g" /app/config/*
 
