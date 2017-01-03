@@ -52,10 +52,16 @@ def ssh_cmd(host, cmd):
     return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
 
 
+def usage():
+    print("""usage:./deploy-zookeeper.py [--dryrun] hosts
+env: DATA_DIR     : -v $DATA_DIR/{instance}:/data
+     DATA_LOG_DIR : -v $DATA_LOG_DIR/{instance}:/datalog""")
+
+
 if __name__ == "__main__":
     options, instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
     if len(instances) == 0:
-        print("usage:./deploy-zk.py [--dryrun] hosts")
+        usage()
         sys.exit(1)
 
     conf = generate_server_conf(instances)
