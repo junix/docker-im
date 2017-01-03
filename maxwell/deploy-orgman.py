@@ -1,43 +1,54 @@
 #!/usr/bin/env python3
 __author__ = 'junix'
 
-import sys, os, getopt
+import sys, os, getopt, re
 
 
-def zk_addr():
-    return os.getenv("ZOOKEEPER", '192.0.2.1:2181,192.0.2.2:2181,192.0.2.3:2181')
+def fetch_env(env_key):
+    env_value = os.getenv(env_key)
+    if env_value is None:
+        return ''
+    else:
+        return "--env {env_key}={env_value}".format(env_key=env_key, env_value=env_value)
 
 
-def org_msg_mq():
-    return os.getenv("KAFKA_TOPIC", 'org_message')
+def compact(raw):
+    return re.sub(r"""\s{2,}""", ' ', raw)
 
 
 def docker_cmd(pid):
-    return \
-        "docker run --restart always \
+    cmd = "docker run --restart always \
         --network orgman \
         --ip 192.0.3.{index} \
         --env NODE_ID={node_id} \
-        --env ZOOKEEPER={zk} \
-        --env KAFKA_TOPIC={mq} \
+        {zk_env} \
+        {mq_env} \
         -d \
         junix/orgman".format(
-            index=pid,
-            node_id=pid,
-            zk=zk_addr(),
-            mq=org_msg_mq())
+        index=pid,
+        node_id=pid,
+        zk_env=fetch_env("ZOOKEEPER"),
+        mq_env=fetch_env("KAFKA_TOPIC"))
+    return compact(cmd)
 
 
 def ssh_cmd(host, cmd):
     return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
 
+
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:')
-    if hosts == []:
-        print("usage:cmd host_to_deploy")
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:', ['dryrun'])
+    if not hosts:
+        print("usage:./deploy-orgman.py [-n node_id_start_from] [--dryrun] hosts")
+        print("env:   ZOOKEEPER=192.0.2.[1-5]:2181")
+        print("       KAFKA_TOPIC")
         sys.exit(1)
+    start_from = int(dict(optlist).get('-n', '1'))
+    print(optlist)
     for index, host in enumerate(hosts):
-        pid = index + 1
+        pid = index + start_from
         cmd = ssh_cmd(host, docker_cmd(pid))
-        print(cmd)
-        os.system(cmd)
+        if '--dryrun' in dict(optlist).keys():
+            print(cmd)
+        else:
+            os.system(cmd)
