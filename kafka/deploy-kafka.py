@@ -14,14 +14,6 @@ def zookeeper_env():
         return "--env ZOOKEEPER={zk}".format(zk=zk_conn)
 
 
-def cluster_name_env():
-    cluster = os.getenv("CLUSTER_NAME")
-    if cluster is None:
-        return ''
-    else:
-        return "--env CLUSTER_NAME={cluster}".format(cluster=cluster)
-
-
 def data_dir_map(index):
     dir = os.getenv("DATA_DIR")
     if dir is None:
@@ -52,14 +44,12 @@ def start_kafka_cmd(index):
              --ip 192.0.8.{index}\
              --name kafka{index}\
              --env BROKER_ID={index}\
-             {cluster_name_env}\
              {zookeeper_env}\
              {data_dir}\
              {data_log_dir}\
              -d junix/kafka"
     raw = pattern.format(
         index=index,
-        cluster_name_env=cluster_name_env(),
         zookeeper_env=zookeeper_env(),
         data_dir=data_dir_map(index),
         data_log_dir=data_log_dir_map(index))
@@ -73,7 +63,6 @@ def ssh_cmd(host, cmd):
 def usage():
     print("""usage:./deploy-kafka.py [--dryrun] hosts
 env: ZOOKEEPER    : 192.0.2.[1-5]:2181
-     CLUSTER_NAME : kafka
      DATA_DIR     : -v $DATA_DIR/{instance}:/app/data
      LOG_DIR      : -v $DATA_DIR/{instance}:/app/logs""")
 

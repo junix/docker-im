@@ -5,8 +5,10 @@ then
     BROKER_ID=1
 fi
 
+HOST_IP=$(hostname --ip-address)
+
 sed -i "s/{{HOSTNAME}}/${HOSTNAME}/g" /app/config/*
-sed -i "s/{{CLUSTER_NAME}}/${CLUSTER_NAME}/g" /app/config/*
+sed -i "s/{{HOST_IP}}/${HOST_IP}/g" /app/config/*
 sed -i "s/{{BROKER_ID}}/${BROKER_ID}/g" /app/config/*
 sed -i "s/{{ZOOKEEPER}}/${ZOOKEEPER}/g" /app/config/*
 
