@@ -44,7 +44,6 @@ if __name__ == "__main__":
         print("       KAFKA_TOPIC")
         sys.exit(1)
     start_from = int(dict(optlist).get('-n', '1'))
-    print(optlist)
     for index, host in enumerate(hosts):
         pid = index + start_from
         cmd = ssh_cmd(host, docker_cmd(pid))
