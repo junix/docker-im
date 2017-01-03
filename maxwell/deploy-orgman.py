@@ -12,11 +12,22 @@ def fetch_env(env_key):
         return "--env {env_key}={env_value}".format(env_key=env_key, env_value=env_value)
 
 
+def fetch_env_or(env_key, default_value):
+    env_value = os.getenv(env_key, default_value)
+    return "--env {env_key}={env_value}".format(env_key=env_key, env_value=env_value)
+
+
 def compact(raw):
     return re.sub(r"""\s{2,}""", ' ', raw)
 
 
 def docker_cmd(pid):
+    defaut_zk = ','.join(
+        ["192.0.2.1:2181",
+         "192.0.2.2:2181",
+         "192.0.2.3:2181",
+         "192.0.2.4:2181",
+         "192.0.2.5:2181"])
     cmd = "docker run --restart always \
         --network orgman \
         --ip 192.0.3.{index} \
@@ -27,7 +38,7 @@ def docker_cmd(pid):
         junix/orgman".format(
         index=pid,
         node_id=pid,
-        zk_env=fetch_env("ZOOKEEPER"),
+        zk_env=fetch_env_or("ZOOKEEPER", defaut_zk),
         mq_env=fetch_env("KAFKA_TOPIC"))
     return compact(cmd)
 
