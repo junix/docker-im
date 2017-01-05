@@ -5,15 +5,25 @@ import sys, os, getopt, re
 
 
 def env_or_nil(env_key):
-    env_value = os.getenv(env_key)
-    if env_value is None:
-        return ''
+    v = os.getenv(env_key)
+    return v if v is not None else ''
+
+
+def env_or_error(env_key):
+    v = os.getenv(env_key)
+    if v is None:
+        raise ValueError('env %s is nil' % env_key)
     else:
-        return "--env {env_key}={env_value}".format(env_key=env_key, env_value=env_value)
+        return v
+
+
+def zk_env():
+    zk = env_or_nil("ZOOKEEPER")
+    return '' if zk == '' else '--env ZOOKEEPER={zk}'.format(zk=zk)
 
 
 def name_prefix():
-    v = os.getenv("NAME")
+    v = os.getenv("NAME_PREFIX")
     return v if v is not None else ''
 
 
@@ -22,35 +32,45 @@ def compact(raw):
 
 
 def docker_cmd(gid, pid):
-    return \
-        "docker run \
+    cmd = "docker run \
         --restart always \
         --network master \
         --ip 192.0.4.{index} \
         --env GROUP_ID={gid} \
         --env NODE_ID={pid} \
-        {zookeeper_env} \
+        {zk_env} \
         --name={name}mg{gid}p{pid}\
         -d \
         junix/maxwell_master".format(
-            gid=gid,
-            name=name_prefix(),
-            index=10 * gid + pid,
-            zookeeper_env=env_or_nil("ZOOKEEPER"),
-            pid=pid)
+        gid=gid,
+        name=name_prefix(),
+        index=10 * gid + pid,
+        zk_env=zk_env(),
+        pid=pid)
+    return compact(cmd)
 
 
 def ssh_cmd(host, cmd):
     return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
 
 
+def usage():
+    print("""usage:deploy-master hosts
+    env: ZOOKEEPER default 192.0.2.[1-5]:2181
+         GROUP_ID
+         NAME_PREFIX default nil""")
+
+
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], 'g:')
-    if hosts == [] or optlist == []:
-        print("usage: cmd --group_id=gid hosts")
+    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    if not hosts:
+        usage()
         sys.exit(1)
-    gid = int(dict(optlist).get('-g'))
+    gid = int(env_or_error("GROUP_ID"))
     for index, host in enumerate(hosts):
         pid = index + 1
         cmd = ssh_cmd(host, docker_cmd(gid, pid))
-        os.system(cmd)
+        if '--dryrun' in dict(optlist).keys():
+            print(cmd)
+        else:
+            os.system(cmd)
