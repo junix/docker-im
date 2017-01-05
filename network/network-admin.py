@@ -8,11 +8,11 @@ def subnet(name):
         return "192.0.2.0"
     elif name == "orgman":
         return "192.0.3.0"
-    elif name == "qida":
+    elif name == "master":
         return "192.0.4.0"
-    elif name == "lecai":
+    elif name == "maxwell":
         return "192.0.5.0"
-    elif name in ["conv_store", "convstore"]:
+    elif name in "conv_store":
         return "192.0.7.0"
     elif name == "kafka":
         return "192.0.8.0"
