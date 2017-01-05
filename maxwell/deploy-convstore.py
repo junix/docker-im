@@ -5,7 +5,7 @@ import sys, os, getopt
 
 
 def zk_addr():
-    return os.getenv("ZOOKEEPER", '192.0.2.1:2181,192.0.2.2:2181,192.0.2.3:2181')
+    return os.getenv("ZOOKEEPER", '192.0.2.1:2181,192.0.2.2:2181,192.0.2.3:2181,192.0.2.4:2181,192.0.2.5:2181')
 
 
 def docker_cmd(pid):

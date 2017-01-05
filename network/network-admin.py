@@ -12,7 +12,7 @@ def subnet(name):
         return "192.0.4.0"
     elif name == "lecai":
         return "192.0.5.0"
-    elif name == "conv_store":
+    elif name in ["conv_store", "convstore"]:
         return "192.0.7.0"
     elif name == "kafka":
         return "192.0.8.0"
