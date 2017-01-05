@@ -66,7 +66,7 @@ if __name__ == "__main__":
         sys.exit(1)
     gid = int(env_or_error("GROUP_ID"))
     for index, host in enumerate(hosts):
-        pid = index + 1
+        pid = index
         cmd = ssh_cmd(host, docker_cmd(gid, pid))
         if '--dryrun' in dict(optlist).keys():
             print(cmd)
