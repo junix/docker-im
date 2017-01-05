@@ -43,7 +43,7 @@ def docker_cmd(pid):
         {group_env} \
         {partitions_env} \
         -d \
-        junix/orgman".format(
+        junix/sinker".format(
         zk_env=env_or("ZOOKEEPER", defaut_zk),
         group_env=env_or_error("GROUP_ID"),
         partitions_env=env_or_error("PARTITIONS"))
@@ -56,7 +56,7 @@ def ssh_cmd(host, cmd):
 
 
 def usage():
-    print("usage:./deploy-orgman.py [-n node_id_start_from] [--dryrun] hosts")
+    print("usage:./deploy-sinker.py [-n node_id_start_from] [--dryrun] hosts")
     print("env:   ZOOKEEPER=192.0.2.[1-5]:2181")
     print("       GROUP_ID")
     print("       PARTITIONS")
