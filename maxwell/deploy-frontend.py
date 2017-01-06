@@ -46,7 +46,7 @@ def docker_cmd(gid, pid):
         --env GROUP_ID={gid} \
         --env NODE_ID={pid} \
         --env EXTERNAL_IP={external_ip} \
-        --env EXTERNAL_PORT={external_port} \
+        --env EXTERNAL_PORT={external_port}  \
         {zk_env} \
         --name={name}fg{gid}p{pid}\
         -d \

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, os, getopt
+import sys, os, getopt,re
 
 
 def generate_server_conf(instances):
@@ -57,6 +57,8 @@ def usage():
 env: DATA_DIR     : -v $DATA_DIR/{instance}:/data
      DATA_LOG_DIR : -v $DATA_LOG_DIR/{instance}:/datalog""")
 
+def compact(raw):
+    return re.sub(r"""\s{2,}""", ' ', raw)
 
 if __name__ == "__main__":
     options, instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
@@ -68,6 +70,6 @@ if __name__ == "__main__":
     for index, host in enumerate(instances):
         cmd = ssh_cmd(host, start_zk_cmd(index + 1, conf))
         if '--dryrun' in dict(options).keys():
-            print(cmd)
+            print(compact(cmd))
         else:
             os.system(cmd)
