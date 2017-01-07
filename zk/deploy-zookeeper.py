@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-import sys, os, getopt,re
+import sys, os, getopt
+from utils import env_or, compact, ssh_cmd
+from docker_cmd import DockerCmd
 
 
-def generate_server_conf(instances):
-    conf_list = ["server.%d=zk%d:2888:3888" % (i, i) for i in range(1, len(instances) + 1)]
+def generate_server_conf(instances, offset=0):
+    conf_list = ["server.{index}={instance}:2888:3888".format(
+        index=i+1,
+        instance=instance_name(i + offset)) for i in range(0, len(instances))]
     return ' '.join(conf_list)
 
 
 def instance_name(index):
-    return "zk{index}".format(index=index)
+    return "{name_prefix}{index}".format(
+        name_prefix=env_or('NAME_PREFIX', 'zk'),
+        index=index)
 
 
 def data_dir_map(index):
@@ -31,25 +37,18 @@ def data_log_dir_map(index):
             instance=instance_name(index))
 
 
-def start_zk_cmd(index, conf):
-    return \
-        "docker run --restart always\
-         --network zookeeper\
-         --ip 192.0.2.{index}\
-         --name zk{index}\
-         --env  ZOO_MY_ID={index}\
-         --env ZOO_SERVERS=\"{conf}\"\
-         {data_dir} {data_log_dir}\
-         -d \
-         zookeeper:3.4.9".format(
-            index=index,
-            conf=conf,
-            data_dir=data_dir_map(index),
-            data_log_dir=data_log_dir_map(index))
-
-
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
+def start_zk_cmd(index, offset, conf):
+    c = DockerCmd()
+    c.use_image('zookeeper:3.4.9').\
+        with_restart().\
+        daemon_mode().\
+        with_network('zookeeper', ip='192.0.2.{index}'.format(index=index+offset)).\
+        with_env('ZOO_MY_ID', index+1).\
+        with_name('zk{index}'.format(index=index+offset)).\
+        with_mount_from_env('DATA_DIR', '/data'). \
+        with_mount_from_env('DATA_LOG_DIR', '/datalog').\
+        with_env('ZOO_SERVICES', conf)
+    return c.command()
 
 
 def usage():
@@ -57,18 +56,16 @@ def usage():
 env: DATA_DIR     : -v $DATA_DIR/{instance}:/data
      DATA_LOG_DIR : -v $DATA_LOG_DIR/{instance}:/datalog""")
 
-def compact(raw):
-    return re.sub(r"""\s{2,}""", ' ', raw)
 
 if __name__ == "__main__":
-    options, instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
+    options, instances = getopt.getopt(sys.argv[1:], "f:", ["dryrun"])
     if len(instances) == 0:
         usage()
         sys.exit(1)
-
-    conf = generate_server_conf(instances)
+    offset = int(dict(options).get('-f', '1'))
+    conf = generate_server_conf(instances, offset)
     for index, host in enumerate(instances):
-        cmd = ssh_cmd(host, start_zk_cmd(index + 1, conf))
+        cmd = ssh_cmd(host, start_zk_cmd(index, offset, conf))
         if '--dryrun' in dict(options).keys():
             print(compact(cmd))
         else:
