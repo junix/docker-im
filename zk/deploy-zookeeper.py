@@ -19,9 +19,7 @@ def instance_name(index):
 
 def start_zk_cmd(index, offset, conf):
     c = DockerCmd()
-    c.use_image('zookeeper:3.4.9').\
-        with_restart().\
-        daemon_mode().\
+    c.use_image('zookeeper:3.4.9').with_restart().daemon_mode().\
         with_network('zookeeper', ip='192.0.2.{index}'.format(index=index+offset)).\
         with_env('ZOO_MY_ID', index+1).\
         with_name(instance_name(index=index+offset)).\
