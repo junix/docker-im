@@ -17,26 +17,6 @@ def instance_name(index):
         index=index)
 
 
-def data_dir_map(index):
-    dir = os.getenv("DATA_DIR")
-    if dir is None:
-        return ''
-    else:
-        return "-v {dir}/{instance}:/data".format(
-            dir=dir,
-            instance=instance_name(index))
-
-
-def data_log_dir_map(index):
-    dir = os.getenv("DATA_LOG_DIR")
-    if dir is None:
-        return ''
-    else:
-        return "-v {dir}/{instance}:/datalog".format(
-            dir=dir,
-            instance=instance_name(index))
-
-
 def start_zk_cmd(index, offset, conf):
     c = DockerCmd()
     c.use_image('zookeeper:3.4.9').\
@@ -44,7 +24,7 @@ def start_zk_cmd(index, offset, conf):
         daemon_mode().\
         with_network('zookeeper', ip='192.0.2.{index}'.format(index=index+offset)).\
         with_env('ZOO_MY_ID', index+1).\
-        with_name('zk{index}'.format(index=index+offset)).\
+        with_name(instance_name(index=index+offset)).\
         with_mount_from_env('DATA_DIR', '/data'). \
         with_mount_from_env('DATA_LOG_DIR', '/datalog').\
         with_env('ZOO_SERVICES', conf)
