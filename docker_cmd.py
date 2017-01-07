@@ -2,6 +2,7 @@ __author__ = 'junix'
 
 import os
 
+
 class DockerCmd:
     def __init__(self):
         self.image = None
@@ -12,6 +13,7 @@ class DockerCmd:
         self.ip = None
         self.env = {}
         self.mount = {}
+        self.remote_exec_host = None
 
     def use_image(self, image_name):
         if not image_name:
@@ -50,7 +52,7 @@ class DockerCmd:
         return self
 
     def with_mount(self, device, dir, append_instance_name=False):
-        self.mount[dir] = device if not append_instance_name else device+'/{instance}'
+        self.mount[dir] = device if not append_instance_name else device + '/{instance}'
         return self
 
     def with_mount_from_env(self, device_env, dir, append_instance_name=True):
@@ -58,8 +60,16 @@ class DockerCmd:
         if not device:
             return self
 
-        self.mount[dir] = device if not append_instance_name else device+'/{instance}'
+        self.mount[dir] = device if not append_instance_name else device + '/{instance}'
         return self
+
+    def exec_in(self, host):
+        self.remote_exec_host = host
+        return self
+
+    @classmethod
+    def ssh_cmd(cls, host, cmd):
+        return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
 
     def command(self):
         if not self.image:
@@ -70,9 +80,10 @@ class DockerCmd:
         ip = '--ip {ip}'.format(ip=self.ip) if self.ip else ''
         name = '--name {name}'.format(name=self.name) if self.name else ''
         mode = '-d' if self.daemon else '-it'
-        envs = ' '.join(['--env {key}="{value}"'.format(key=k, value=v) for k, v in self.env.items()])
+        env_list = ' '.join(['--env {key}="{value}"'.format(key=k, value=v) for k, v in self.env.items()])
         mounts = ' '.join(['-v {device}:{dir}'.format(dir=k, device=v.format(instance=self.name))
                            for k, v in self.mount.items()])
-        return ' '.join([basic, restart, network, ip, name, envs, mounts, mode, self.image])
-
-
+        cmd = ' '.join([basic, restart, network, ip, name, env_list, mounts, mode, self.image])
+        if not self.remote_exec_host:
+            return cmd
+        return self.ssh_cmd(self.remote_exec_host, cmd)

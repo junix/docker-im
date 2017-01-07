@@ -10,7 +10,3 @@ def env_or(env_key, default_value):
 
 def compact(raw):
     return re.sub(r"""\s{2,}""", ' ', raw)
-
-
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
