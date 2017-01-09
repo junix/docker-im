@@ -95,6 +95,10 @@ class DockerCmd:
 
     def show(self):
         print(self.command())
+        return self
 
-    def execute(self):
-        os.system(self.command())
+    def execute(self, dryrun=False):
+        if dryrun:
+            self.show()
+        else:
+            os.system(self.command())

@@ -1,55 +1,24 @@
 #!/usr/bin/env python3
-__author__ = 'junix'
+import sys
+import os
+import getopt
 
-import sys, os, getopt, re
-
-
-def env_or_nil(env_key):
-    v = os.getenv(env_key)
-    return v if v is not None else ''
+from docker_cmd import DockerCmd
+from utils import zk_env
 
 
-def env_or_error(env_key):
-    v = os.getenv(env_key)
-    if v is None:
-        raise ValueError('env %s is nil' % env_key)
-    else:
-        return v
+class BackendCmd(DockerCmd):
 
-
-def zk_env():
-    zk = env_or_nil("ZOOKEEPER")
-    return '' if zk == '' else '--env ZOOKEEPER={zk}'.format(zk=zk)
-
-
-def name_prefix():
-    v = os.getenv("NAME_PREFIX")
-    return v if v is not None else ''
-
-
-def compact(raw):
-    return re.sub(r"""\s{2,}""", ' ', raw)
-
-
-def docker_cmd(gid, pid):
-    cmd = "docker run \
-        --restart always \
-        --network maxwell \
-        --env GROUP_ID={gid} \
-        --env NODE_ID={pid} \
-        {zk_env} \
-        --name={name}bg{gid}p{pid}\
-        -d \
-        junix/maxwell_backend".format(
-        gid=gid,
-        name=name_prefix(),
-        zk_env=zk_env(),
-        pid=pid)
-    return compact(cmd)
-
-
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
+    def __init__(self, node_id, offset):
+        DockerCmd.__init__(self)
+        name_prefix = os.getenv('NAME_PREFIX', 'b')
+        group_id = int(os.getenv("GROUP_ID", '0'))
+        self.use_image('junix/maxwell_backend').daemon_mode(). \
+            with_network(net='maxwell'). \
+            with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
+            with_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            with_os_env('GROUP_ID', skip=False). \
+            with_env('PARTITION_ID', node_id)
 
 
 def usage():
@@ -60,15 +29,14 @@ def usage():
 
 
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
     if not hosts:
         usage()
         sys.exit(1)
-    gid = int(env_or_error("GROUP_ID"))
+    offset = int(dict(optlist).get('-f', '0'))
     for index, host in enumerate(hosts):
-        pid = index
-        cmd = ssh_cmd(host, docker_cmd(gid, pid))
-        if '--dryrun' in dict(optlist).keys():
-            print(cmd)
-        else:
-            os.system(cmd)
+        pid = index + 1
+        c = BackendCmd(node_id=pid, offset=offset)
+        c.exec_in(host)
+        dryrun = '--dryrun' in dict(optlist).keys()
+        c.execute(dryrun=dryrun)

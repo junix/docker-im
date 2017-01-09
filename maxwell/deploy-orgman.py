@@ -30,8 +30,4 @@ if __name__ == "__main__":
     for index, host in enumerate(hosts):
         pid = index + start_from
         c = OrgmanCmd(offset=ip_offset, pid=pid)
-        c.exec_in(host)
-        if '--dryrun' in dict(optlist).keys():
-            c.show()
-        else:
-            c.execute()
+        c.exec_in(host).execute(dryrun='--dryrun' in dict(optlist).keys())

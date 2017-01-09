@@ -33,8 +33,4 @@ if __name__ == "__main__":
         usage()
     for index, host in enumerate(hosts):
         c = SinkerCmd(index + 1)
-        c.exec_in(host)
-        if '--dryrun' in dict(optlist).keys():
-            c.show()
-        else:
-            c.execute()
+        c.exec_in(host).execute(dryrun='--dryrun' in dict(optlist).keys())

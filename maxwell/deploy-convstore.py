@@ -27,8 +27,4 @@ if __name__ == "__main__":
     for index, host in enumerate(hosts):
         pid = index + 1
         c = ConvStoreCmd(ip_offset=offset, node_id=pid)
-        c.exec_in(host)
-        if '--dryrun' in dict(optlist).keys():
-            print(utils.compact(c.command()))
-        else:
-            os.system(c.command())
+        c.exec_in(host).execute(dryrun='--dryrun' in dict(optlist).keys())
