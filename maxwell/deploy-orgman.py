@@ -1,64 +1,38 @@
 #!/usr/bin/env python3
 __author__ = 'junix'
 
-import sys, os, getopt, re
+import sys, os, getopt, utils
+from docker_cmd import DockerCmd
 
 
-def fetch_env(env_key):
-    env_value = os.getenv(env_key)
-    if env_value is None:
-        return ''
-    else:
-        return "--env {env_key}={env_value}".format(env_key=env_key, env_value=env_value)
-
-
-def fetch_env_or(env_key, default_value):
-    env_value = os.getenv(env_key, default_value)
-    return "--env {env_key}={env_value}".format(env_key=env_key, env_value=env_value)
-
-
-def compact(raw):
-    return re.sub(r"""\s{2,}""", ' ', raw)
-
-
-def docker_cmd(pid):
-    defaut_zk = ','.join(
-        ["192.0.2.1:2181",
-         "192.0.2.2:2181",
-         "192.0.2.3:2181",
-         "192.0.2.4:2181",
-         "192.0.2.5:2181"])
-    cmd = "docker run --restart always \
-        --network orgman \
-        --ip 192.0.3.{index} \
-        --env NODE_ID={node_id} \
-        {zk_env} \
-        {mq_env} \
-        -d \
-        junix/orgman".format(
-        index=pid,
-        node_id=pid,
-        zk_env=fetch_env_or("ZOOKEEPER", defaut_zk),
-        mq_env=fetch_env("KAFKA_TOPIC"))
-    return compact(cmd)
-
-
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
+class OrgmanCmd(DockerCmd):
+    def __init__(self, pid, offset):
+        DockerCmd.__init__(self)
+        self.pid = pid
+        self.use_image('junix/orgman'). \
+            daemon_mode(). \
+            with_network(net='orgman', ip='192.0.3.{index}'.format(index=offset + pid)). \
+            with_env('NODE_ID', pid). \
+            with_mount_from_env('DATA_DIR', '/app/data'). \
+            with_mount_from_env('LOG_DIR', '/app/log'). \
+            with_os_env('ZOOKEEPER'). \
+            with_os_env('KAFKA_TOPIC')
 
 
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:n:', ['dryrun'])
     if not hosts:
         print("usage:./deploy-orgman.py [-n node_id_start_from] [--dryrun] hosts")
         print("env:   ZOOKEEPER=192.0.2.[1-5]:2181")
         print("       KAFKA_TOPIC")
         sys.exit(1)
     start_from = int(dict(optlist).get('-n', '1'))
+    ip_offset = int(dict(optlist).get('-f', '0'))
     for index, host in enumerate(hosts):
         pid = index + start_from
-        cmd = ssh_cmd(host, docker_cmd(pid))
+        c = OrgmanCmd(offset=ip_offset, pid=pid)
+        c.exec_in(host)
         if '--dryrun' in dict(optlist).keys():
-            print(cmd)
+            print(utils.compact(c.command()))
         else:
-            os.system(cmd)
+            os.system(c.command())
