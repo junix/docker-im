@@ -3,7 +3,7 @@ import sys
 import os
 import getopt
 from docker_cmd import DockerCmd
-from utils import zk_env, compact
+from utils import zk_env
 
 
 class SinkerCmd(DockerCmd):
