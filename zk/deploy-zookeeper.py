@@ -14,7 +14,7 @@ class ZkCommand(docker_cmd.DockerCmd):
         self.use_image('zookeeper:3.4.9').with_restart().daemon_mode(). \
             with_network('zookeeper', ip='192.0.2.{index}'.format(index=self.index + self.offset)). \
             with_env('ZOO_MY_ID', self.index + 1). \
-            with_env('ZOO_SERVICES', self.conf). \
+            with_env('ZOO_SERVERS', self.conf). \
             with_mount_from_env('DATA_DIR', '/data'). \
             with_mount_from_env('DATA_LOG_DIR', '/datalog')
 
