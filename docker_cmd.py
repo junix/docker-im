@@ -97,4 +97,4 @@ class DockerCmd:
         print(self.command())
 
     def execute(self):
-        os.sysconf(self.command())
+        os.system(self.command())
