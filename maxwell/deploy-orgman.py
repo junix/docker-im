@@ -9,14 +9,11 @@ class OrgmanCmd(DockerCmd):
     def __init__(self, pid, offset):
         DockerCmd.__init__(self)
         self.pid = pid
-        self.use_image('junix/orgman'). \
-            daemon_mode(). \
+        self.use_image('junix/orgman').daemon_mode(). \
             with_network(net='orgman', ip='192.0.3.{index}'.format(index=offset + pid)). \
-            with_env('NODE_ID', pid). \
-            with_mount_from_env('DATA_DIR', '/app/data'). \
-            with_mount_from_env('LOG_DIR', '/app/log'). \
-            with_os_env('ZOOKEEPER'). \
-            with_os_env('KAFKA_TOPIC')
+            with_env('NODE_ID', pid).with_os_env('ZOOKEEPER'). \
+            with_os_env('KAFKA_TOPIC').with_mount_from_env('DATA_DIR', '/app/data'). \
+            with_mount_from_env('LOG_DIR', '/app/log')
 
 
 if __name__ == "__main__":
