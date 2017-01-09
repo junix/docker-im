@@ -30,7 +30,7 @@ def usage():
 
 
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
     if not hosts:
         usage()
         sys.exit(1)
