@@ -48,6 +48,6 @@ if __name__ == "__main__":
         c = ZkCommand(instances, index, offset)
         c.exec_in(host)
         if '--dryrun' in dict(options).keys():
-            print(compact(c.command()))
+            c.show()
         else:
-            os.system(c.command())
+            c.execute()

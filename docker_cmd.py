@@ -1,9 +1,18 @@
-__author__ = 'junix'
-
 import os
+import re
+
+__author__ = 'junix'
 
 
 class DockerCmd:
+    @classmethod
+    def ssh_cmd(cls, host, cmd):
+        return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
+
+    @classmethod
+    def compact(cls, raw):
+        return re.sub(r"""\s{2,}""", ' ', raw)
+
     def __init__(self):
         self.image = None
         self.restart = True
@@ -67,10 +76,6 @@ class DockerCmd:
         self.remote_exec_host = host
         return self
 
-    @classmethod
-    def ssh_cmd(cls, host, cmd):
-        return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
-
     def command(self):
         if not self.image:
             raise ValueError('image name is nil')
@@ -87,3 +92,9 @@ class DockerCmd:
         if not self.remote_exec_host:
             return cmd
         return self.ssh_cmd(self.remote_exec_host, cmd)
+
+    def show(self):
+        print(self.command())
+
+    def execute(self):
+        os.sysconf(self.command())

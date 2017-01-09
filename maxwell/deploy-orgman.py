@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-import sys
-import os
 import getopt
-import utils
+import sys
+
 from docker_cmd import DockerCmd
 
 
@@ -33,6 +32,6 @@ if __name__ == "__main__":
         c = OrgmanCmd(offset=ip_offset, pid=pid)
         c.exec_in(host)
         if '--dryrun' in dict(optlist).keys():
-            print(utils.compact(c.command()))
+            c.show()
         else:
-            os.system(c.command())
+            c.execute()
