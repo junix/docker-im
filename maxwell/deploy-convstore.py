@@ -1,42 +1,32 @@
 #!/usr/bin/env python3
-__author__ = 'junix'
-
-import sys, os, getopt
-
-
-def zk_addr():
-    defaut_zk = ','.join(
-        ["192.0.2.1:2181",
-         "192.0.2.2:2181",
-         "192.0.2.3:2181",
-         "192.0.2.4:2181",
-         "192.0.2.5:2181"])
-    return os.getenv("ZOOKEEPER", defaut_zk)
+import sys
+import os
+import getopt
+import docker_cmd
+import utils
 
 
-def docker_cmd(pid):
-    return \
-        "docker run --restart always \
-        --network conv_store \
-        --ip 192.0.7.{index} \
-        --env NODE_ID={node_id} \
-        --env ZOOKEEPER={zk} \
-        -d \
-        junix/conv_store".format(
-            index=pid,
-            node_id=pid,
-            zk=zk_addr())
+class ConvStoreCmd(docker_cmd.DockerCmd):
+    def __init__(self, ip_offset, node_id):
+        docker_cmd.DockerCmd.__init__(self)
+        node_ip = '192.0.7.{index}'.format(index=ip_offset + node_id)
+        self.use_image('junix/conv_store').daemon_mode(). \
+            with_network(net='conv_store', ip=node_ip). \
+            with_os_env('ZOOKEEPER', utils.zk_env(1, 5)). \
+            with_env('NODE_ID', node_id)
 
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
 
 if __name__ == "__main__":
-    hosts = sys.argv[1:]
-    if hosts == []:
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
+    if not hosts:
         print("usage:cmd hosts")
         sys.exit(1)
+    offset = int(dict(optlist).get('-f', '0'))
     for index, host in enumerate(hosts):
         pid = index + 1
-        cmd = ssh_cmd(host, docker_cmd(pid))
-        print(cmd)
-        os.system(cmd)
+        c = ConvStoreCmd(ip_offset=offset, node_id=pid)
+        c.exec_in(host)
+        if '--dryrun' in dict(optlist).keys():
+            print(utils.compact(c.command()))
+        else:
+            os.system(c.command())

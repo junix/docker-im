@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-__author__ = 'junix'
-
-import sys, os, getopt, utils
+import sys
+import os
+import getopt
+import utils
 from docker_cmd import DockerCmd
 
 
 class OrgmanCmd(DockerCmd):
+
     def __init__(self, pid, offset):
         DockerCmd.__init__(self)
         self.pid = pid
@@ -19,7 +21,8 @@ class OrgmanCmd(DockerCmd):
 if __name__ == "__main__":
     optlist, hosts = getopt.getopt(sys.argv[1:], 'f:n:', ['dryrun'])
     if not hosts:
-        print("usage:./deploy-orgman.py [-n node_id_start_from] [--dryrun] hosts")
+        print(
+            "usage:./deploy-orgman.py [-n node_id_start_from] [--dryrun] hosts")
         print("env:   ZOOKEEPER=192.0.2.[1-5]:2181")
         print("       KAFKA_TOPIC")
         sys.exit(1)
