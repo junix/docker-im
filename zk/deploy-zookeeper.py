@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-import sys, os, getopt
-from utils import env_or, compact
+import sys
+import os
+import getopt
 import docker_cmd
 
 
 class ZkCommand(docker_cmd.DockerCmd):
-    def __init__(self, instances, index, offset):
+
+    def __init__(self, instance_list, instance_index, ip_offset):
         docker_cmd.DockerCmd.__init__(self)
-        self.index = index
-        self.offset = offset
-        self.name = self.instance_name(index + offset)
-        self.conf = self.generate_server_conf(instances, offset)
+        self.index = instance_index
+        self.offset = ip_offset
+        self.name = self.instance_name(instance_index + ip_offset)
+        self.conf = self.generate_server_conf(instance_list, ip_offset)
         self.use_image('zookeeper:3.4.9').with_restart().daemon_mode(). \
             with_network('zookeeper', ip='192.0.2.{index}'.format(index=self.index + self.offset)). \
             with_env('ZOO_MY_ID', self.index + 1). \
@@ -19,16 +21,16 @@ class ZkCommand(docker_cmd.DockerCmd):
             with_mount_from_env('DATA_LOG_DIR', '/datalog')
 
     @classmethod
-    def instance_name(cls, index):
+    def instance_name(cls, instance_id):
         return "{name_prefix}{index}".format(
-            name_prefix=env_or('NAME_PREFIX', 'zk'),
-            index=index)
+            name_prefix=os.getenv('NAME_PREFIX', 'zk'),
+            index=instance_id)
 
     @classmethod
-    def generate_server_conf(cls, instances, offset=0):
+    def generate_server_conf(cls, instance_list, ip_offset=0):
         conf_list = ["server.{index}={instance}:2888:3888".format(
             index=i + 1,
-            instance=cls.instance_name(i + offset)) for i in range(0, len(instances))]
+            instance=cls.instance_name(i + ip_offset)) for i in range(0, len(instance_list))]
         return ' '.join(conf_list)
 
 
@@ -45,9 +47,5 @@ if __name__ == "__main__":
         sys.exit(1)
     offset = int(dict(options).get('-f', '1'))
     for index, host in enumerate(instances):
-        c = ZkCommand(instances, index, offset)
-        c.exec_in(host)
-        if '--dryrun' in dict(options).keys():
-            c.show()
-        else:
-            c.execute()
+        c = ZkCommand(instances, index, offset).exec_in(host)
+        c.execute('--dryrun' in dict(options).keys())
