@@ -9,7 +9,7 @@ from utils import zk_env
 
 class BackendCmd(DockerCmd):
 
-    def __init__(self, node_id, offset):
+    def __init__(self, node_id):
         DockerCmd.__init__(self)
         name_prefix = os.getenv('NAME_PREFIX', 'b')
         group_id = int(os.getenv("GROUP_ID", '0'))
@@ -29,14 +29,11 @@ def usage():
 
 
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
     if not hosts:
         usage()
         sys.exit(1)
-    offset = int(dict(optlist).get('-f', '0'))
     for index, host in enumerate(hosts):
-        pid = index + 1
-        c = BackendCmd(node_id=pid, offset=offset)
-        c.exec_in(host)
+        c = BackendCmd(index).exec_in(host)
         dryrun = '--dryrun' in dict(optlist).keys()
         c.execute(dryrun=dryrun)
