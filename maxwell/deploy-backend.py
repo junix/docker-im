@@ -8,17 +8,23 @@ from utils import zk_env
 
 
 class BackendCmd(DockerCmd):
-
     def __init__(self, node_id):
         DockerCmd.__init__(self)
-        name_prefix = os.getenv('NAME_PREFIX', 'b')
-        group_id = int(os.getenv("GROUP_ID", '0'))
-        self.use_image('junix/maxwell_backend').daemon_mode(). \
-            with_network(network='maxwell'). \
-            with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
-            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+        self.node_id = node_id
+        self.group_id = int(os.getenv("GROUP_ID", '0'))
+        self.image = 'junix/maxwell_backend'
+        self.daemon = True
+        self.name = self.full_name()
+        self.network = 'maxwell'
+        self.copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
             copy_os_env('GROUP_ID', can_ignore=False). \
             with_env('PARTITION_ID', node_id)
+
+    def full_name(self):
+        return '{prefix}g{gid}p{pid}'.format(
+            prefix=os.getenv('NAME_PREFIX', 'b'),
+            gid=self.group_id,
+            pid=self.node_id)
 
 
 def usage():
