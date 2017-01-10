@@ -15,10 +15,10 @@ class MasterCmd(DockerCmd):
         group_id = int(os.getenv("GROUP_ID", '0'))
         node_ip = '192.0.4.{index}'.format(index=offset + node_id)
         self.use_image('junix/maxwell_master').daemon_mode(). \
-            with_network(net='master', ip=node_ip). \
+            with_network(network='master', ip=node_ip). \
             with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
-            with_os_env('ZOOKEEPER', zk_env(1, 5)). \
-            with_os_env('GROUP_ID', skip=False). \
+            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            copy_os_env('GROUP_ID', can_ignore=False). \
             with_env('NODE_ID', node_id)
 
 

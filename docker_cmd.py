@@ -17,7 +17,7 @@ class DockerCmd:
         self.image = None
         self.restart = True
         self.daemon = True
-        self.net = None
+        self.network = None
         self.name = None
         self.ip = None
         self.env = {}
@@ -34,8 +34,8 @@ class DockerCmd:
         self.restart = turn_on
         return self
 
-    def with_network(self, net, ip=None):
-        self.net = net
+    def with_network(self, network, ip=None):
+        self.network = network
         self.ip = ip
         return self
 
@@ -51,10 +51,10 @@ class DockerCmd:
         self.env[key] = value
         return self
 
-    def with_os_env(self, key, default_value=None, skip=True):
+    def copy_os_env(self, key, default_value=None, can_ignore=True):
         value = os.getenv(key, default_value)
         if not value:
-            if skip:
+            if can_ignore:
                 return self
             raise ValueError(key + " is nil")
         self.env[key] = value
@@ -81,7 +81,7 @@ class DockerCmd:
             raise ValueError('image name is nil')
         basic = 'docker run'
         restart = '--restart always' if self.restart else ''
-        network = '--network {net}'.format(net=self.net) if self.net else ''
+        network = '--network {net}'.format(net=self.network) if self.network else ''
         ip = '--ip {ip}'.format(ip=self.ip) if self.ip else ''
         name = '--name {name}'.format(name=self.name) if self.name else ''
         mode = '-d' if self.daemon else '-it'

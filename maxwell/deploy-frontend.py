@@ -1,67 +1,26 @@
 #!/usr/bin/env python3
-__author__ = 'junix'
+import sys
+import os
+import getopt
 
-import sys, os, getopt, re
-
-
-def env_or_nil(env_key):
-    v = os.getenv(env_key)
-    return v if v is not None else ''
+from docker_cmd import DockerCmd
+from utils import zk_env
 
 
-def env_or_error(env_key):
-    v = os.getenv(env_key)
-    if v is None:
-        raise ValueError('env %s is nil' % env_key)
-    else:
-        return v
+class FrontendCmd(DockerCmd):
 
-
-def env_or(env_key, def_val):
-    v = os.getenv(env_key)
-    if v is None:
-        return def_val
-    else:
-        return v
-
-
-def zk_env():
-    zk = env_or_nil("ZOOKEEPER")
-    return '' if zk == '' else '--env ZOOKEEPER={zk}'.format(zk=zk)
-
-
-def name_prefix():
-    v = os.getenv("NAME_PREFIX")
-    return v if v is not None else ''
-
-
-def compact(raw):
-    return re.sub(r"""\s{2,}""", ' ', raw)
-
-
-def docker_cmd(gid, pid):
-    cmd = "docker run \
-        --restart always \
-        --network host \
-        --env GROUP_ID={gid} \
-        --env NODE_ID={pid} \
-        --env EXTERNAL_IP={external_ip} \
-        --env EXTERNAL_PORT={external_port}  \
-        {zk_env} \
-        --name={name}fg{gid}p{pid}\
-        -d \
-        junix/maxwell_frontend".format(
-        gid=gid,
-        external_port=env_or("EXTERNAL_PORT", "2013"),
-        external_ip=env_or_error("EXTERNAL_IP"),
-        name=name_prefix(),
-        zk_env=zk_env(),
-        pid=pid)
-    return compact(cmd)
-
-
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
+    def __init__(self, node_id):
+        DockerCmd.__init__(self)
+        name_prefix = os.getenv('NAME_PREFIX', 'f')
+        group_id = int(os.getenv("GROUP_ID", '0'))
+        self.use_image('junix/maxwell_frontend').daemon_mode(). \
+            with_network(network='host'). \
+            with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
+            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            copy_os_env('GROUP_ID', can_ignore=False). \
+            copy_os_env('EXTERNAL_IP', can_ignore=False). \
+            copy_os_env('EXTERNAL_PORT', default_value=2013). \
+            with_env('NODE_ID', node_id)
 
 
 def usage():
@@ -78,11 +37,7 @@ if __name__ == "__main__":
     if not hosts:
         usage()
         sys.exit(1)
-    gid = int(env_or_error("GROUP_ID"))
     for index, host in enumerate(hosts):
         pid = index
-        cmd = ssh_cmd(host, docker_cmd(gid, pid))
-        if '--dryrun' in dict(optlist).keys():
-            print(cmd)
-        else:
-            os.system(cmd)
+        c = FrontendCmd(index + 1).exec_in(host)
+        c.execute('--dryrun' in dict(optlist).keys())

@@ -12,11 +12,11 @@ class SinkerCmd(DockerCmd):
         DockerCmd.__init__(self)
         name_prefix = os.getenv('NAME_PREFIX', 'sinker')
         self.use_image('junix/sinker').daemon_mode(). \
-            with_network(net='sinker'). \
+            with_network(network='sinker'). \
             with_name('{prefix}{id}'.format(prefix=name_prefix, id=node_id)). \
-            with_os_env('ZOOKEEPER', zk_env(1, 5)). \
-            with_os_env('GROUP_ID', skip=False). \
-            with_os_env('PARTITIONS', skip=False). \
+            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            copy_os_env('GROUP_ID', can_ignore=False). \
+            copy_os_env('PARTITIONS', can_ignore=False). \
             with_env('NODE_ID', node_id)
 
 

@@ -14,10 +14,10 @@ class BackendCmd(DockerCmd):
         name_prefix = os.getenv('NAME_PREFIX', 'b')
         group_id = int(os.getenv("GROUP_ID", '0'))
         self.use_image('junix/maxwell_backend').daemon_mode(). \
-            with_network(net='maxwell'). \
+            with_network(network='maxwell'). \
             with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
-            with_os_env('ZOOKEEPER', zk_env(1, 5)). \
-            with_os_env('GROUP_ID', skip=False). \
+            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            copy_os_env('GROUP_ID', can_ignore=False). \
             with_env('PARTITION_ID', node_id)
 
 

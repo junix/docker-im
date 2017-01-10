@@ -11,9 +11,9 @@ class OrgmanCmd(DockerCmd):
         DockerCmd.__init__(self)
         self.pid = pid
         self.use_image('junix/orgman').daemon_mode(). \
-            with_network(net='orgman', ip='192.0.3.{index}'.format(index=offset + pid)). \
-            with_env('NODE_ID', pid).with_os_env('ZOOKEEPER'). \
-            with_os_env('KAFKA_TOPIC').with_mount_from_env('DATA_DIR', '/app/data'). \
+            with_network(network='orgman', ip='192.0.3.{index}'.format(index=offset + pid)). \
+            with_env('NODE_ID', pid).copy_os_env('ZOOKEEPER'). \
+            copy_os_env('KAFKA_TOPIC').with_mount_from_env('DATA_DIR', '/app/data'). \
             with_mount_from_env('LOG_DIR', '/app/log')
 
 
