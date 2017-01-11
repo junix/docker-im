@@ -15,7 +15,7 @@ class KafkaCmd(DockerCmd):
         self.use_image('junix/kafka').\
             daemon_mode().\
             with_name(self.instance_name()).\
-            copy_os_env('ZOOKEEPER', utils.zk_env(offset=1, count=5)). \
+            copy_os_env('ZOOKEEPER', utils.zk_env(count=5)). \
             with_env('BROKER_ID', broker_id). \
             with_network(network='kafka', ip=utils.ip_of('kafka', broker_id)). \
             with_mount_from_env('DATA_DIR', '/app/data'). \
@@ -26,7 +26,7 @@ class KafkaCmd(DockerCmd):
 
 
 def usage():
-    print('''usage:./deploy-kafka.py [--dryrun] hosts
+    print('''usage:deploy-kafka.py [--dryrun] hosts
 env: ZOOKEEPER    : 192.0.2.[1-5]:2181
      NAME_PREFIX  : kafka
      DATA_DIR     : -v $DATA_DIR/{instance}:/app/data

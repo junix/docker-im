@@ -22,9 +22,8 @@ def compact(raw):
     return re.sub(r"""\s{2,}""", ' ', raw)
 
 
-def zk_env(offset, count):
-    instances = ['192.0.2.{index}:2181'.format(
-        index=i) for i in range(offset, offset + count)]
+def zk_env(count=5, offset=0):
+    instances = [ip_of('zookeeper', offset + i + 1) for i in range(count)]
     return ','.join(instances)
 
 
