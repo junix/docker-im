@@ -8,7 +8,9 @@ network_dict = {
     'maxwell': '192.0.5.0',
     'conv_store': '192.0.7.0',
     'kafka': '192.0.8.0',
-    'sinker': '192.0.9.0'}
+    'sinker': '192.0.9.0',
+    'cassandra': '192.0.10.0',
+}
 
 
 def env_or(env_key, default_value):
