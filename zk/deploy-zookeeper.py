@@ -3,6 +3,7 @@ import sys
 import os
 import getopt
 import docker_cmd
+import utils
 
 
 class ZkCommand(docker_cmd.DockerCmd):
@@ -12,7 +13,7 @@ class ZkCommand(docker_cmd.DockerCmd):
         self.offset = offset
         self.name = self.instance_name(instance_index + offset)
         self.conf = self.generate_server_conf(instance_list, offset)
-        ip = '192.0.2.{index}'.format(index=self.index + self.offset)
+        ip = utils.ip_of('zookeeper', self.index + self.offset)
         self.use_image('zookeeper:3.4.9'). \
             with_restart(). \
             daemon_mode(). \
