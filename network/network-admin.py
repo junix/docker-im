@@ -7,11 +7,10 @@ import getopt
 
 class NetworkAdmin:
     def __init__(self, options, networks):
-        option_keys = dict(options).keys()
         self.network_list = networks
-        self.to_create = '-c' in option_keys or '--create' in option_keys
-        self.to_delete = '-d' in option_keys or '--delete' in option_keys
-        self.dryrun = '--dryrun' in option_keys
+        self.to_create = '-c' in options or '--create' in options
+        self.to_delete = '-d' in options or '--delete' in options
+        self.dryrun = '--dryrun' in options
         self.subnet_dict = {
             'zookeeper': '192.0.2.0',
             'orgman': '192.0.3.0',
@@ -21,7 +20,7 @@ class NetworkAdmin:
             'kafka': '192.0.8.0',
             'sinker': '192.0.9.0'}
         for n in self.network_list:
-            if n not in self.subnet_dict.keys():
+            if n not in self.subnet_dict:
                 raise ValueError('unknown subnet:{net}'.format(net=n))
 
     def __subnet_of(self, name):
@@ -80,5 +79,5 @@ class NetworkAdmin:
 
 if __name__ == '__main__':
     optlist, network_list = getopt.getopt(sys.argv[1:], 'cd', ['create', 'delete', 'dryrun'])
-    admin = NetworkAdmin(optlist, network_list)
+    admin = NetworkAdmin(dict(optlist), network_list)
     admin.execute()

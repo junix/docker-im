@@ -6,12 +6,12 @@ import docker_cmd
 
 
 class ZkCommand(docker_cmd.DockerCmd):
-    def __init__(self, instance_list, instance_index, ip_offset):
+    def __init__(self, instance_list, instance_index, offset):
         docker_cmd.DockerCmd.__init__(self)
         self.index = instance_index
-        self.offset = ip_offset
-        self.name = self.instance_name(instance_index + ip_offset)
-        self.conf = self.generate_server_conf(instance_list, ip_offset)
+        self.offset = offset
+        self.name = self.instance_name(instance_index + offset)
+        self.conf = self.generate_server_conf(instance_list, offset)
         ip = '192.0.2.{index}'.format(index=self.index + self.offset)
         self.use_image('zookeeper:3.4.9'). \
             with_restart(). \
@@ -43,11 +43,13 @@ env: DATA_DIR     : -v $DATA_DIR/{instance}:/data
 
 
 if __name__ == "__main__":
-    options, instances = getopt.getopt(sys.argv[1:], "f:", ["dryrun"])
-    if len(instances) == 0:
+    optlist, instances = getopt.getopt(sys.argv[1:], "f:", ["dryrun"])
+    options = dict(optlist)
+    if not instances:
         usage()
         sys.exit(1)
-    offset = int(dict(options).get('-f', '1'))
+    ip_offset = int(dict(options).get('-f', '1'))
     for index, host in enumerate(instances):
-        c = ZkCommand(instances, index, offset).exec_in(host)
-        c.execute('--dryrun' in dict(options).keys())
+        ZkCommand(instances, index, ip_offset).\
+            exec_in(host).\
+            execute('--dryrun' in options)
