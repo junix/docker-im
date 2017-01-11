@@ -2,6 +2,7 @@
 
 import os
 import sys
+import utils
 import getopt
 
 
@@ -11,20 +12,8 @@ class NetworkAdmin:
         self.to_create = '-c' in options or '--create' in options
         self.to_delete = '-d' in options or '--delete' in options
         self.dryrun = '--dryrun' in options
-        self.subnet_dict = {
-            'zookeeper': '192.0.2.0',
-            'orgman': '192.0.3.0',
-            'master': '192.0.4.0',
-            'maxwell': '192.0.5.0',
-            'conv_store': '192.0.7.0',
-            'kafka': '192.0.8.0',
-            'sinker': '192.0.9.0'}
         for n in self.network_list:
-            if n not in self.subnet_dict:
-                raise ValueError('unknown subnet:{net}'.format(net=n))
-
-    def __subnet_of(self, name):
-        return self.subnet_dict.get(name)
+            utils.network_of(n)
 
     def create_pool_yaml(self, network):
         file_name = 'ippool-{net}.yaml'.format(net=network)
@@ -32,12 +21,13 @@ class NetworkAdmin:
         spec_file.write(self.pool_spec(network))
         spec_file.close()
 
-    def pool_spec(self, network):
+    @classmethod
+    def pool_spec(cls, network):
         return '''- apiVersion: v1
   kind: ipPool
   metadata:
     cidr: {subnet}/24
-    '''.format(subnet=self.__subnet_of(network))
+    '''.format(subnet=utils.network_of(network))
 
     def create_cali_net(self, network):
         self.create_pool_yaml(network)
@@ -46,7 +36,7 @@ class NetworkAdmin:
             'calicoctl apply -f policy-full-connect.yaml',
             'docker network create --driver calico --ipam-driver calico-ipam --subnet={subnet}/24 {name}'.format(
                 name=network,
-                subnet=self.__subnet_of(network))]
+                subnet=utils.network_of(network))]
 
     def delete_cali_net(self, network):
         self.create_pool_yaml(network)

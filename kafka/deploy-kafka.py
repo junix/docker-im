@@ -4,20 +4,20 @@ import os
 import getopt
 
 from docker_cmd import DockerCmd
-from utils import zk_env
+import utils
 
 
 class KafkaCmd(DockerCmd):
 
-    def __init__(self, node_id):
+    def __init__(self, broker_id):
         DockerCmd.__init__(self)
-        self.node_id = node_id
+        self.node_id = broker_id
         self.use_image('junix/kafka').\
             daemon_mode().\
             with_name(self.instance_name()).\
-            copy_os_env('ZOOKEEPER', zk_env(offset=1, count=5)). \
-            with_env('BROKER_ID', node_id). \
-            with_network(network='kafka', ip='192.0.8.{pid}'.format(pid=node_id)). \
+            copy_os_env('ZOOKEEPER', utils.zk_env(offset=1, count=5)). \
+            with_env('BROKER_ID', broker_id). \
+            with_network(network='kafka', ip=utils.ip_of('kafka', broker_id)). \
             with_mount_from_env('DATA_DIR', '/app/data'). \
             with_mount_from_env('LOG_DIR', '/app/logs')
 
