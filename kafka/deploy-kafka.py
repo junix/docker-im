@@ -1,81 +1,44 @@
 #!/usr/bin/env python3
-import sys, os, getopt, re
+import sys
+import os
+import getopt
+
+from docker_cmd import DockerCmd
+from utils import zk_env
 
 
-def instance_name(index):
-    return "kafka{index}".format(index=index)
+class KafkaCmd(DockerCmd):
 
+    def __init__(self, node_id):
+        DockerCmd.__init__(self)
+        self.node_id = node_id
+        self.use_image('junix/kafka').\
+            daemon_mode().\
+            with_name(self.instance_name()).\
+            copy_os_env('ZOOKEEPER', zk_env(offset=1, count=5)). \
+            with_env('BROKER_ID', node_id). \
+            with_network(network='kafka', ip='192.0.8.{pid}'.format(pid=node_id)). \
+            with_mount_from_env('DATA_DIR', '/app/data'). \
+            with_mount_from_env('LOG_DIR', '/app/logs')
 
-def zookeeper_env():
-    zk_conn = os.getenv("ZOOKEEPER")
-    if zk_conn is None:
-        return ''
-    else:
-        return "--env ZOOKEEPER={zk}".format(zk=zk_conn)
-
-
-def data_dir_map(index):
-    dir = os.getenv("DATA_DIR")
-    if dir is None:
-        return ''
-    else:
-        return "-v {dir}/{instance}:/app/data".format(
-            dir=dir,
-            instance=instance_name(index))
-
-
-def data_log_dir_map(index):
-    dir = os.getenv("LOG_DIR")
-    if dir is None:
-        return ''
-    else:
-        return "-v {dir}/{instance}:/app/logs".format(
-            dir=dir,
-            instance=instance_name(index))
-
-
-def compact(raw):
-    return re.sub(r"""\s{2,}""", ' ', raw)
-
-
-def start_kafka_cmd(index):
-    pattern = "docker run --restart always\
-             --network kafka\
-             --ip 192.0.8.{index}\
-             --name kafka{index}\
-             --env BROKER_ID={index}\
-             {zookeeper_env}\
-             {data_dir}\
-             {data_log_dir}\
-             -d junix/kafka"
-    raw = pattern.format(
-        index=index,
-        zookeeper_env=zookeeper_env(),
-        data_dir=data_dir_map(index),
-        data_log_dir=data_log_dir_map(index))
-    return compact(raw)
-
-
-def ssh_cmd(host, cmd):
-    return "ssh {host} '{cmd}'".format(host=host, cmd=cmd)
+    def instance_name(self):
+        return '{prefix}{pid}'.format(prefix=os.getenv('NAME_PREFIX', 'kafka'), pid=self.node_id)
 
 
 def usage():
-    print("""usage:./deploy-kafka.py [--dryrun] hosts
+    print('''usage:./deploy-kafka.py [--dryrun] hosts
 env: ZOOKEEPER    : 192.0.2.[1-5]:2181
      DATA_DIR     : -v $DATA_DIR/{instance}:/app/data
-     LOG_DIR      : -v $DATA_DIR/{instance}:/app/logs""")
+     LOG_DIR      : -v $DATA_DIR/{instance}:/app/logs''')
 
 
-if __name__ == "__main__":
-    options, instances = getopt.getopt(sys.argv[1:], "", ["dryrun"])
-    if len(instances) == 0:
+if __name__ == '__main__':
+    optlist, instances = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    options = dict(optlist)
+    if not instances:
         usage()
         sys.exit(1)
 
     for index, host in enumerate(instances):
-        cmd = ssh_cmd(host, start_kafka_cmd(index + 1))
-        if '--dryrun' in dict(options).keys():
-            print(cmd)
-        else:
-            os.system(cmd)
+        c = KafkaCmd(index + 1).exec_in(host)
+        c.execute('--dryrun' in options)
