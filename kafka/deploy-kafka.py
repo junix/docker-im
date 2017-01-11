@@ -28,6 +28,7 @@ class KafkaCmd(DockerCmd):
 def usage():
     print('''usage:./deploy-kafka.py [--dryrun] hosts
 env: ZOOKEEPER    : 192.0.2.[1-5]:2181
+     NAME_PREFIX  : kafka
      DATA_DIR     : -v $DATA_DIR/{instance}:/app/data
      LOG_DIR      : -v $DATA_DIR/{instance}:/app/logs''')
 
