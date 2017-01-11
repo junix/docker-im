@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import sys
 import os
 import getopt
@@ -6,15 +6,17 @@ import docker_cmd
 
 
 class ZkCommand(docker_cmd.DockerCmd):
-
     def __init__(self, instance_list, instance_index, ip_offset):
         docker_cmd.DockerCmd.__init__(self)
         self.index = instance_index
         self.offset = ip_offset
         self.name = self.instance_name(instance_index + ip_offset)
         self.conf = self.generate_server_conf(instance_list, ip_offset)
-        self.use_image('zookeeper:3.4.9').with_restart().daemon_mode(). \
-            with_network('zookeeper', ip='192.0.2.{index}'.format(index=self.index + self.offset)). \
+        ip = '192.0.2.{index}'.format(index=self.index + self.offset)
+        self.use_image('zookeeper:3.4.9'). \
+            with_restart(). \
+            daemon_mode(). \
+            with_network(network='zookeeper', ip=ip). \
             with_env('ZOO_MY_ID', self.index + 1). \
             with_env('ZOO_SERVERS', self.conf). \
             with_mount_from_env('DATA_DIR', '/data'). \

@@ -18,6 +18,8 @@ class BackendCmd(DockerCmd):
         self.network = 'maxwell'
         self.copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
             copy_os_env('GROUP_ID', can_ignore=False). \
+            with_mount_from_env('DATA_DIR', '/app/data'). \
+            with_mount_from_env('DATA_LOG', '/app/log').\
             with_env('PARTITION_ID', node_id)
 
     def full_name(self):

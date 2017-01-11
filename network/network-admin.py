@@ -1,65 +1,84 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-import os, sys, getopt
-
-
-def subnet(name):
-    if name == "zookeeper":
-        return "192.0.2.0"
-    elif name == "orgman":
-        return "192.0.3.0"
-    elif name == "master":
-        return "192.0.4.0"
-    elif name == "maxwell":
-        return "192.0.5.0"
-    elif name in "conv_store":
-        return "192.0.7.0"
-    elif name == "kafka":
-        return "192.0.8.0"
-    elif name == "sinker":
-        return "192.0.9.0"
-    else:
-        raise ValueError("unknown net:" + name)
+import os
+import sys
+import getopt
 
 
-def create_pool_yaml(name):
-    spec = \
-"""- apiVersion: v1
+class NetworkAdmin:
+    def __init__(self, options, networks):
+        option_keys = dict(options).keys()
+        self.network_list = networks
+        self.to_create = '-c' in option_keys or '--create' in option_keys
+        self.to_delete = '-d' in option_keys or '--delete' in option_keys
+        self.dryrun = '--dryrun' in option_keys
+        self.subnet_dict = {
+            'zookeeper': '192.0.2.0',
+            'orgman': '192.0.3.0',
+            'master': '192.0.4.0',
+            'maxwell': '192.0.5.0',
+            'conv_store': '192.0.7.0',
+            'kafka': '192.0.8.0',
+            'sinker': '192.0.9.0'}
+        for n in self.network_list:
+            if n not in self.subnet_dict.keys():
+                raise ValueError('unknown subnet:{net}'.format(net=n))
+
+    def __subnet_of(self, name):
+        return self.subnet_dict.get(name)
+
+    def create_pool_yaml(self, network):
+        file_name = 'ippool-{net}.yaml'.format(net=network)
+        spec_file = open(file_name, 'w+')
+        spec_file.write(self.pool_spec(network))
+        spec_file.close()
+
+    def pool_spec(self, network):
+        return '''- apiVersion: v1
   kind: ipPool
   metadata:
     cidr: {subnet}/24
-""".format(subnet=subnet(name))
-    fd = open("ippool-{name}.yaml".format(name=name), "w")
-    fd.write(spec)
-    fd.close()
+    '''.format(subnet=self.__subnet_of(network))
+
+    def create_cali_net(self, network):
+        self.create_pool_yaml(network)
+        return [
+            'calicoctl create -f ippool-{name}.yaml'.format(name=network),
+            'calicoctl apply -f policy-full-connect.yaml',
+            'docker network create --driver calico --ipam-driver calico-ipam --subnet={subnet}/24 {name}'.format(
+                name=network,
+                subnet=self.__subnet_of(network))]
+
+    def delete_cali_net(self, network):
+        self.create_pool_yaml(network)
+        return [
+            'docker network rm {name}'.format(name=network),
+            'calicoctl delete -f ippool-{name}.yaml'.format(name=network)
+        ]
+
+    @classmethod
+    def usage(cls):
+        print('''usage: network-admin.py [-c | --create] | [-d | --delete] network''')
+
+    def execute(self):
+        if self.to_create:
+            for n in self.network_list:
+                self.execute_cmd(self.create_cali_net(n))
+        elif self.to_delete:
+            for n in self.network_list:
+                self.execute_cmd(self.delete_cali_net(n))
+        else:
+            self.usage()
+
+    def execute_cmd(self, cmd_list):
+        for c in cmd_list:
+            if self.dryrun:
+                print(c)
+            else:
+                os.system(c)
 
 
-def create_cali_net(name):
-    create_pool_yaml(name)
-    cmd_list = [
-        "calicoctl create -f ippool-{name}.yaml".format(name=name),
-        "calicoctl apply -f policy-full-connect.yaml".format(name=name),
-        "docker network create --driver calico --ipam-driver calico-ipam --subnet={subnet}/24 {name}".format(
-            name=name,
-            subnet=subnet(name)
-        )
-    ]
-    [os.system(cmd) for cmd in cmd_list]
-
-def delete_cali_net(name):
-    create_pool_yaml(name)
-    cmd_list = [
-        "docker network rm {name}".format(name=name),
-        "calicoctl delete -f ippool-{name}.yaml".format(name=name)
-    ]
-    [os.system(cmd) for cmd in cmd_list]
-
-if __name__ == "__main__":
-    optlist, nets = getopt.getopt(sys.argv[1:], "cd", ["create", "delete"])
-    keys = dict(optlist).keys()
-    if '-c' in keys or '--create' in keys:
-        [create_cali_net(n) for n in nets]
-    elif '-d' in keys or '--delete' in keys:
-        [delete_cali_net(n) for n in nets]
-    else:
-        print("usage: cmd [-c | -d] networks")
+if __name__ == '__main__':
+    optlist, network_list = getopt.getopt(sys.argv[1:], 'cd', ['create', 'delete', 'dryrun'])
+    admin = NetworkAdmin(optlist, network_list)
+    admin.execute()
