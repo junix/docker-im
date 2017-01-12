@@ -31,8 +31,13 @@ function conf_docker() {
     echo 'ExecStart=/usr/bin/dockerd $OPTIONS $DOCKER_STORAGE_OPTIONS $DOCKER_NETWORK_OPTIONS $BLOCK_REGISTRY $INSECURE_REGISTRY' >> ${CONF}
 
     SYS_CONF=/etc/sysconfig/docker
-    echo "OPTIONS=\"-g /mnt1/docker --log-opt max-size=10m --log-opt max-file=10 -H tcp://${MYIP}:2375 \
--H unix:///var/run/docker.sock --cluster-store=${ETCD_URL:-etcd://-127.0.0.1:4001} --cluster-advertise=${MYIP}:2375\"" > ${SYS_CONF}
+    echo "OPTIONS=\"-g /mnt1/docker \
+--log-opt max-size=10m \
+--log-opt max-file=10 \
+-H tcp://${MYIP}:2375 \
+-H unix:///var/run/docker.sock \
+--cluster-store=${ETCD_URL:-etcd://-127.0.0.1:4001} \
+--cluster-advertise=${MYIP}:2375\"" > ${SYS_CONF}
 }
 
 function systemctl_docker() {
