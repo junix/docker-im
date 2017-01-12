@@ -55,4 +55,4 @@ def ip_of_container(container):
         for n in networks.values():
             ips.append(n.get('IPAddress'))
             ips.append(n.get('IPAMConfig', {}).get('IPv4Address'))
-    return [n for n in ips if n]
+    return list(set([n for n in ips if n]))
