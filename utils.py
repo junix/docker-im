@@ -55,6 +55,6 @@ def ip_of_container(container):
         for n in networks.values():
             ips.append(n.get('IPAddress'))
             ipam = n.get('IPAMConfig')
-            if not ipam:
+            if ipam:
                 ips.append(ipam.get('IPv4Address'))
     return list(set([n for n in ips if n]))
