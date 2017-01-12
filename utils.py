@@ -40,9 +40,13 @@ def ip_of(name, index):
     return re.sub('0$', str(index), network_of(name))
 
 
-def ip_of_container(container):
+def inspect_container(container):
     cmd = 'docker inspect {c}'.format(c=container)
     out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
-    inspect = json.loads(out.decode('utf-8'))
-    print(inspect)
+    return json.loads(out.decode('utf-8'))
+
+
+def ip_of_container(container):
+    return [inspect.get('NetworkSettings') for inspect in inspect_container(container)]
+
 
