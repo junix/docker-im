@@ -40,6 +40,7 @@ function systemctl_docker() {
 }
 
 install_repo_file &&
+install_docker &&
 systemctl_docker &&
 conf_docker &&
 systemctl start docker
