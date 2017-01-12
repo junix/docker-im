@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ "$MYIP" == "" ]]; then
+if [[ "${MYIP}" == "" ]]; then
     echo 'env MYIP must set'
 fi
 
@@ -20,7 +20,6 @@ function install_docker() {
 }
 
 function conf_docker() {
-
     mkdir /etc/systemd/system/docker.service.d
     CONF='/etc/systemd/system/docker.service.d/docker.conf'
 
@@ -43,12 +42,12 @@ function conf_docker() {
 --cluster-advertise=${MYIP}:2375\"" > ${SYS_CONF}
 }
 
-function systemctl_docker() {
+function install_systemd() {
     systemctl enable docker.service
 }
 
 install_repo_file &&
 install_docker &&
-systemctl_docker &&
+install_systemd &&
 conf_docker &&
 systemctl start docker
