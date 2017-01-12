@@ -30,6 +30,8 @@ function conf_docker() {
     echo 'ExecStart=' >> ${CONF}
     echo 'ExecStart=/usr/bin/dockerd $OPTIONS $DOCKER_STORAGE_OPTIONS $DOCKER_NETWORK_OPTIONS $BLOCK_REGISTRY $INSECURE_REGISTRY' >> ${CONF}
 
+    systemctl daemon-reload
+
     SYS_CONF=/etc/sysconfig/docker
     echo "OPTIONS=\"-g /mnt1/docker \
 --log-opt max-size=10m \
