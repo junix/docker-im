@@ -1,5 +1,7 @@
 import os
 import re
+import subprocess
+import json
 
 network_dict = {
     'zookeeper': '192.0.2.0',
@@ -23,7 +25,7 @@ def compact(raw):
 
 
 def zk_env(count=5, offset=0):
-    instances = [ip_of('zookeeper', offset + i + 1)+':2181' for i in range(count)]
+    instances = [ip_of('zookeeper', offset + i + 1) + ':2181' for i in range(count)]
     return ','.join(instances)
 
 
@@ -36,3 +38,11 @@ def network_of(name):
 
 def ip_of(name, index):
     return re.sub('0$', str(index), network_of(name))
+
+
+def ip_of_container(container):
+    cmd = 'docker inspect {c}'.format(c=container)
+    out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
+    inspect = json.loads(out.decode('utf-8'))
+    print(inspect)
+
