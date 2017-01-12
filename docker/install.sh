@@ -15,7 +15,8 @@ function install_repo_file {
 }
 
 function install_docker() {
-    yum install -y docker-engine
+    yum install -y docker-engine &&
+    usermod -aG docker mos
 }
 
 function conf_docker() {
