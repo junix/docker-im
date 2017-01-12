@@ -52,7 +52,7 @@ def ip_of_container(container):
         net = inspect.get('NetworkSettings', {})
         ips.append(net.get('IPAddress'))
         networks = net.get('Networks', {})
-        for n in networks:
+        for n in networks.values():
             ips.append(n.get('IPAddress'))
             ips.append(n.get('IPAMConfig', {}).get('IPv4Address'))
     return [n for n in ips if n]
