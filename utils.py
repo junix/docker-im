@@ -23,7 +23,7 @@ def compact(raw):
 
 
 def zk_env(count=5, offset=0):
-    instances = [ip_of('zookeeper', offset + i + 1) for i in range(count)]
+    instances = [ip_of('zookeeper', offset + i + 1)+':2181' for i in range(count)]
     return ','.join(instances)
 
 
