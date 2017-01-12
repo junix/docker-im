@@ -17,6 +17,7 @@ class BackendCmd(DockerCmd):
         self.name = self.full_name()
         self.network = 'maxwell'
         self.copy_os_env('ZOOKEEPER', zk_env()). \
+            with_restart(False).\
             copy_os_env('GROUP_ID', can_ignore=False). \
             with_mount_from_env('DATA_DIR', '/app/data'). \
             with_mount_from_env('LOG_DIR', '/app/log').\

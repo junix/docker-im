@@ -80,7 +80,7 @@ class DockerCmd:
         if not self.image:
             raise ValueError('image name is nil')
         basic = 'docker run'
-        restart = ''
+        restart = '--restart always' if self.restart else ''
         network = '--network {net}'.format(net=self.network) if self.network else ''
         ip = '--ip {ip}'.format(ip=self.ip) if self.ip else ''
         name = '--name {name}'.format(name=self.name) if self.name else ''
