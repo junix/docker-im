@@ -9,5 +9,5 @@ CASSANDRA_HOSTS=${CASSANDRA_HOST:-'192.0.10.1,192.0.10.2,192.0.10,3'}
 
 for tab in $(ls ${SPACE_DIR}); do
     echo "will load $tab to ${CASSANDRA_HOSTS}"
-    sstableloader -d ${CASSANDRA_HOSTS} ${tab}
+    sstableloader -d ${CASSANDRA_HOSTS} ${SPACE_DIR}/${tab}
 done
