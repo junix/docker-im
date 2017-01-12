@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-if [ -z ${1+x} ]; then
+if [[ $# == 0 ]]; then
     echo 'Usage:ipof container'
     exit 1
 fi
 
-CONTAINER=$1
+for container in $@; do
+    docker inspect -f '{{ .NetworkSettings.Networks.zookeeper.IPAMConfig.IPv4Address }}' ${container}
+done
 
-docker inspect -f '{{ .NetworkSettings.Networks.zookeeper.IPAMConfig.IPv4Address }}' ${CONTAINER}
