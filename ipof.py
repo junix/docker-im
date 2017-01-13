@@ -10,4 +10,7 @@ if __name__ == '__main__':
         sys.exit(1)
     for c in containers:
         ips = utils.ip_of_container(c)
-        print(','.join(ips))
+        if len(ips) == 0:
+            print('none')
+        else:
+            print(','.join(ips))
