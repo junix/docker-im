@@ -9,7 +9,7 @@ if __name__ == '__main__':
         print('usage:ipof.py containers')
         sys.exit(1)
     container = Container(containers[0])
-    ipams = container.ipam()
+    ipams = list(container.ipam())
     if not ipams or len(ipams) == 0:
         print('none')
     else:
