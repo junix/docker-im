@@ -3,3 +3,11 @@ docker-im.iml
 log/
 *.pyc
 */*.pyc
+__pycache__/
+cassandra/__pycache__/
+kafka/__pycache__/
+maxwell/__pycache__/
+network/__pycache__/
+network/ippool-zookeeper.yaml
+utils.pyc
+zk/__pycache__/
