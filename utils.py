@@ -1,7 +1,5 @@
 import os
 import re
-import subprocess
-import json
 
 network_dict = {
     'zookeeper': '192.0.2.0',
@@ -42,51 +40,3 @@ def network_of(name):
 def ip_of(name, index):
     return re.sub('0$', str(index), network_of(name))
 
-
-# ========================
-# === containers utils ===
-# ========================
-def inspect_container(container):
-    cmd = 'docker inspect {c}'.format(c=container)
-    out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
-    return json.loads(out.decode('utf-8'))
-
-
-def ip_of_container(container):
-    ips = []
-    for inspect in inspect_container(container):
-        net = inspect.get('NetworkSettings', {})
-        ips.append(net.get('IPAddress'))
-        networks = net.get('Networks', {})
-        for n in networks.values():
-            ips.append(n.get('IPAddress'))
-            ipam = n.get('IPAMConfig')
-            if ipam:
-                ips.append(ipam.get('IPv4Address'))
-    return list(set([n for n in ips if n]))
-
-
-def env_of_container(container):
-    inspects = inspect_container(container)
-    if not inspects:
-        return None
-    inspect = inspects[0]
-    return inspect.get('Config', {}).get('Env', [])
-
-
-def network_of_container(container):
-    inspects = inspect_container(container)
-    if not inspects:
-        return None
-    inspect = inspects.pop()
-    return inspect.get('NetworkSettings', {}).get('Networks', {}).keys()
-
-
-def ipam_of_container(container):
-    inspects = inspect_container(container)
-    if not inspects:
-        return None
-    inspect = inspects.pop()
-    networks = inspect.get('NetworkSettings', {}).get('Networks', {})
-    ipv4 = [(k, v.get('IPAMConfig').get('IPv4Address')) for k, v in networks.items() if v.get('IPAMConfig')]
-    return ['{network}:{ip}'.format(network=network, ip=ip) for (network, ip) in ipv4 if ip]

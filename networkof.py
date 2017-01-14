@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import utils
+from container import Container
 
 if __name__ == '__main__':
     containers = sys.argv[1:]
@@ -9,5 +9,6 @@ if __name__ == '__main__':
         print('usage:networkof.py container')
         sys.exit(1)
 
-    for n in utils.network_of_container(containers[0]):
+    container = Container(containers[0])
+    for n in container.network():
         print(n)
