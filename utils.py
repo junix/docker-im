@@ -80,3 +80,13 @@ def network_of_container(container):
         return None
     inspect = inspects.pop()
     return inspect.get('NetworkSettings', {}).get('Networks', {}).keys()
+
+
+def ipam_of_container(container):
+    inspects = inspect_container(container)
+    if not inspects:
+        return None
+    inspect = inspects.pop()
+    networks = inspect.get('NetworkSettings', {}).get('Networks', {})
+    ipv4 = [(n, n.get('IPAMConfig').get('IPv4Address')) for n in networks if n.get('IPAMConfig')]
+    return ['{network:ip}'.format(network=network, ip=ip) for (network, ip) in ipv4 if ip]
