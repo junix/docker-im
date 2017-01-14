@@ -38,5 +38,9 @@ class Container:
 
     def ipam(self):
         networks = self.inspect0().get('NetworkSettings', {}).get('Networks', {})
-        ipv4 = [(k, v.get('IPAMConfig').get('IPv4Address')) for k, v in networks.items() if v.get('IPAMConfig')]
-        return ['{network}:{ip}'.format(network=network, ip=ip) for (network, ip) in ipv4 if ip]
+        for k, v in networks.items():
+            ipam_config = v.get('IPAMConfig')
+            if ipam_config:
+                ipv4_address = ipam_config.get('IPv4Address')
+                if ipv4_address:
+                    yield '{network}:{ip}'.format(network=k, ip=ipv4_address)
