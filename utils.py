@@ -88,5 +88,5 @@ def ipam_of_container(container):
         return None
     inspect = inspects.pop()
     networks = inspect.get('NetworkSettings', {}).get('Networks', {})
-    ipv4 = [(n, n.get('IPAMConfig').get('IPv4Address')) for n in networks if n.get('IPAMConfig')]
+    ipv4 = [(k, v.get('IPAMConfig').get('IPv4Address')) for k, v in networks.items() if v.get('IPAMConfig')]
     return ['{network:ip}'.format(network=network, ip=ip) for (network, ip) in ipv4 if ip]
