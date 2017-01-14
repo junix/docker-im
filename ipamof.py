@@ -9,8 +9,8 @@ if __name__ == '__main__':
         print('usage:ipof.py containers')
         sys.exit(1)
     for c in containers:
-        ips = utils.ipam_of_container(c)
-        if len(ips) == 0:
+        ipams = utils.ipam_of_container(c)
+        if not ipams or len(ipams) == 0:
             print('none')
         else:
-            print(','.join(ips))
+            print(','.join(ipams))
