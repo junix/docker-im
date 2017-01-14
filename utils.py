@@ -58,3 +58,11 @@ def ip_of_container(container):
             if ipam:
                 ips.append(ipam.get('IPv4Address'))
     return list(set([n for n in ips if n]))
+
+
+def env_of_container(container):
+    inspects = inspect_container(container)
+    if not inspects:
+        return None
+    inspect = inspects[0]
+    return inspect.get('Config', {}).get('Env', [])
