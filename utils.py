@@ -24,6 +24,9 @@ def compact(raw):
     return re.sub(r"""\s{2,}""", ' ', raw)
 
 
+# ===========================
+# === configuration utils ===
+# ===========================
 def zk_env(count=5, offset=0):
     instances = [ip_of('zookeeper', offset + i + 1) + ':2181' for i in range(count)]
     return ','.join(instances)
@@ -40,6 +43,9 @@ def ip_of(name, index):
     return re.sub('0$', str(index), network_of(name))
 
 
+# ========================
+# === containers utils ===
+# ========================
 def inspect_container(container):
     cmd = 'docker inspect {c}'.format(c=container)
     out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
@@ -66,3 +72,11 @@ def env_of_container(container):
         return None
     inspect = inspects[0]
     return inspect.get('Config', {}).get('Env', [])
+
+
+def network_of_container(container):
+    inspects = inspect_container(container)
+    if not inspects:
+        return None
+    inspect = inspects.pop()
+    return inspect.get('NetworkSettings', {}).get('Networks', {}).keys()
