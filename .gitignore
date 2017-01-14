@@ -1,3 +1,5 @@
 docker-im.iml
 .idea/
 log/
+*.pyc
+*/*.pyc
