@@ -7,17 +7,15 @@ import utils
 
 
 class CassandraCommand(docker_cmd.DockerCmd):
-    def __init__(self, instance_index, ip_offset, memory_limit = None):
+    def __init__(self, instance_index, ip_offset):
         docker_cmd.DockerCmd.__init__(self)
         pos = instance_index + ip_offset + 1
         self.offset = ip_offset
         self.name = self.instance_name(pos)
-        self.memory = memory_limit
         ip = utils.ip_of('cassandra', pos)
         seeds = [utils.ip_of('cassandra', ip_offset + i + 1) for i in range(2)]
 
         self.use_image('cassandra'). \
-            with_restart(). \
             daemon_mode(). \
             with_network(network='cassandra', ip=ip). \
             with_env('CASSANDRA_BROADCAST_ADDRESS', ip). \
