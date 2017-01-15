@@ -14,7 +14,7 @@ class SinkerCmd(DockerCmd):
         self.use_image('junix/sinker').daemon_mode(). \
             with_network(network='sinker'). \
             with_name('{prefix}{id}'.format(prefix=name_prefix, id=node_id)). \
-            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            copy_os_env('ZOOKEEPER', zk_env()). \
             copy_os_env('GROUP_ID', can_ignore=False). \
             copy_os_env('PARTITIONS', can_ignore=False). \
             with_env('NODE_ID', node_id)
