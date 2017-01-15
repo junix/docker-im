@@ -32,6 +32,7 @@ class CassandraCommand(docker_cmd.DockerCmd):
                        'CASSANDRA_NUM_TOKENS',
                        'CASSANDRA_DC',
                        'CASSANDRA_RACK',
+                       'MAX_HEAP_SIZE',
                        'CASSANDRA_ENDPOINT_SNITCH']
         for e in os_env_list:
             self.copy_os_env(e)
