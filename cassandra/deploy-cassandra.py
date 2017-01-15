@@ -7,11 +7,12 @@ import utils
 
 
 class CassandraCommand(docker_cmd.DockerCmd):
-    def __init__(self, instance_index, ip_offset):
+    def __init__(self, instance_index, ip_offset, memory_limit = None):
         docker_cmd.DockerCmd.__init__(self)
         pos = instance_index + ip_offset + 1
         self.offset = ip_offset
         self.name = self.instance_name(pos)
+        self.memory = memory_limit
         ip = utils.ip_of('cassandra', pos)
         seeds = [utils.ip_of('cassandra', ip_offset + i + 1) for i in range(2)]
 
@@ -49,13 +50,15 @@ env: DATA_DIR     : -v $DATA_DIR/{instance}:/data''')
 
 
 if __name__ == '__main__':
-    optlist, instances = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
+    optlist, instances = getopt.getopt(sys.argv[1:], 'f:m:', ['dryrun'])
     options = dict(optlist)
     if not instances:
         usage()
         sys.exit(1)
-    ip_off = int(dict(options).get('-f', '0'))
+    ip_off = int(options.get('-f', '0'))
+    memory_limit = options.get('-m')
     for index, host in enumerate(instances):
         CassandraCommand(index, ip_off). \
             exec_in(host). \
+            limit_memory(memory_limit).\
             execute('--dryrun' in options)
