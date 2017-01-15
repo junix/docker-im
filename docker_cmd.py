@@ -15,7 +15,7 @@ class DockerCmd:
 
     def __init__(self):
         self.image = None
-        self.restart = True
+        self.restart = False
         self.daemon = True
         self.network = None
         self.name = None

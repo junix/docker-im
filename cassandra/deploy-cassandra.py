@@ -16,6 +16,7 @@ class CassandraCommand(docker_cmd.DockerCmd):
         seeds = [utils.ip_of('cassandra', ip_offset + i + 1) for i in range(2)]
 
         self.use_image('cassandra'). \
+            with_restart(False).\
             daemon_mode(). \
             with_network(network='cassandra', ip=ip). \
             with_env('CASSANDRA_BROADCAST_ADDRESS', ip). \
