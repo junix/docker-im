@@ -33,6 +33,7 @@ class CassandraCommand(docker_cmd.DockerCmd):
                        'CASSANDRA_DC',
                        'CASSANDRA_RACK',
                        'MAX_HEAP_SIZE',
+                       'JVM_OPTS',
                        'CASSANDRA_ENDPOINT_SNITCH']
         for e in os_env_list:
             self.copy_os_env(e)
