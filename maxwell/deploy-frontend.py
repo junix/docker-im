@@ -4,7 +4,7 @@ import os
 import getopt
 
 from docker_cmd import DockerCmd
-from utils import zk_env
+import utils
 
 
 class FrontendCmd(DockerCmd):
@@ -16,7 +16,7 @@ class FrontendCmd(DockerCmd):
         self.use_image('junix/maxwell_frontend').daemon_mode(). \
             with_network(network='host'). \
             with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
-            copy_os_env('ZOOKEEPER', zk_env(1, 5)). \
+            copy_os_env('ZOOKEEPER', utils.zk_env()). \
             copy_os_env('GROUP_ID', can_ignore=False). \
             copy_os_env('EXTERNAL_IP', can_ignore=False). \
             copy_os_env('EXTERNAL_PORT', default_value=2013). \
@@ -38,6 +38,6 @@ if __name__ == "__main__":
         usage()
         sys.exit(1)
     for index, host in enumerate(hosts):
-        pid = index
-        c = FrontendCmd(index + 1).exec_in(host)
-        c.execute('--dryrun' in dict(optlist).keys())
+        FrontendCmd(index).\
+            exec_in(host).\
+            execute('--dryrun' in dict(optlist).keys())

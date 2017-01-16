@@ -90,7 +90,7 @@ class DockerCmd:
         ip = '--ip {ip}'.format(ip=self.ip) if self.ip else ''
         name = '--name {name}'.format(name=self.name) if self.name else ''
         mode = '-d' if self.daemon else '-it'
-        env_list = ' '.join(['--env {key}="{value}"'.format(key=k, value=v) for k, v in self.env.items()])
+        env_list = ' '.join(['-e {key}="{value}"'.format(key=k, value=v) for k, v in self.env.items()])
         mounts = ' '.join(['-v {device}:{dir}'.format(dir=k, device=v.format(instance=self.name))
                            for k, v in self.mount.items()])
         memory_limit = '--memory={quota}'.format(quota=self.memory) if self.memory else ''
