@@ -10,6 +10,6 @@ if __name__ == '__main__':
         sys.exit(1)
 
     container = Container(containers[0])
-    for e in container.env():
+    for e in container.mount():
         print(e)
 

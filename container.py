@@ -36,6 +36,13 @@ class Container:
     def network(self):
         return self.inspect0().get('NetworkSettings', {}).get('Networks', {}).keys()
 
+    def mount(self):
+        mounts = self.inspect0().get('Mounts', [])
+        for m in mounts:
+            yield '{src}:{dst}'.format(
+                src=m.get('Source'),
+                dst=m.get('Destination'))
+
     def ipam(self):
         networks = self.inspect0().get('NetworkSettings', {}).get('Networks', {})
         for k, v in networks.items():
