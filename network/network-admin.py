@@ -31,12 +31,15 @@ class NetworkAdmin:
 
     def create_cali_net(self, network):
         self.create_pool_yaml(network)
-        return [
+        cmd_list =[
             'calicoctl create -f ippool-{name}.yaml'.format(name=network),
             'calicoctl apply -f policy-full-connect.yaml',
             'docker network create --driver calico --ipam-driver calico-ipam --subnet={subnet}/24 {name}'.format(
                 name=network,
                 subnet=utils.network_of(network))]
+        if network == 'maxwell':
+            cmd_list.append('calicoctl apply -f maxwell_out_conn.yaml')
+        return cmd_list
 
     def delete_cali_net(self, network):
         self.create_pool_yaml(network)
