@@ -15,7 +15,6 @@ class ZkCommand(docker_cmd.DockerCmd):
         self.conf = self.generate_server_conf(instance_list, offset)
         ip = utils.ip_of('zookeeper', self.index + self.offset)
         self.use_image('zookeeper:3.4.9'). \
-            with_restart(). \
             daemon_mode(). \
             with_network(network='zookeeper', ip=ip). \
             with_env('ZOO_MY_ID', self.index + 1). \
