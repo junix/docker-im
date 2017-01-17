@@ -13,7 +13,7 @@ class MasterCmd(DockerCmd):
         DockerCmd.__init__(self)
         name_prefix = os.getenv('NAME_PREFIX', 'm')
         group_id = int(os.getenv("GROUP_ID", '0'))
-        node_ip = utils.ip_of('master', ip_offset + node_id + 1)
+        node_ip = utils.ip_of('master', ip_offset + node_id)
         self.use_image('junix/maxwell_master').daemon_mode(). \
             with_network(network='master', ip=node_ip). \
             with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if not hosts:
         usage()
         sys.exit(1)
-    offset = int(dict(optlist).get('-f', '0'))
+    offset = int(dict(optlist).get('-f', '1'))
     for index, host in enumerate(hosts):
         c = MasterCmd(node_id=index, ip_offset=offset)
         c.exec_in(host)
