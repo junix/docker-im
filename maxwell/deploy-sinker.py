@@ -11,7 +11,8 @@ class SinkerCmd(DockerCmd):
     def __init__(self, node_id):
         DockerCmd.__init__(self)
         name_prefix = os.getenv('NAME_PREFIX', 'sinker')
-        self.use_image('junix/sinker').daemon_mode(). \
+        self.use_image('junix/sinker').\
+            daemon_mode(). \
             with_network(network='sinker'). \
             with_name('{prefix}{id}'.format(prefix=name_prefix, id=node_id)). \
             copy_os_env('ZOOKEEPER', zk_env()). \
@@ -32,5 +33,6 @@ if __name__ == "__main__":
     if not hosts:
         usage()
     for index, host in enumerate(hosts):
-        c = SinkerCmd(index + 1)
-        c.exec_in(host).execute(dryrun='--dryrun' in dict(optlist).keys())
+        SinkerCmd(index).\
+            exec_in(host).\
+            execute(dryrun='--dryrun' in dict(optlist).keys())
