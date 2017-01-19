@@ -33,8 +33,8 @@ if __name__ == "__main__":
     if not hosts:
         usage()
     options = dict(optlist)
-    memory_limit = int(options.get('-m', '500m'))
-    cpu_shares = int(options.get('-c', '512'))
+    memory_limit = options.get('-m', '500m')
+    cpu_shares = options.get('-c', '512')
     for index, host in enumerate(hosts):
         SinkerCmd(index).\
             exec_in(host).\
