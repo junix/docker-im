@@ -38,7 +38,7 @@ function conf_docker() {
 --log-opt max-file=10 \
 -H tcp://${INTERNAL_IP}:2375 \
 -H unix:///var/run/docker.sock \
---cluster-store=${ETCD_URL:-etcd://-127.0.0.1:4001} \
+--cluster-store=${ETCD_URL:-etcd://127.0.0.1:4001} \
 --cluster-advertise=${INTERNAL_IP}:2375\"" > ${SYS_CONF}
 }
 
