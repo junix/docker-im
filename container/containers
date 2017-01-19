@@ -10,5 +10,6 @@ if __name__ == '__main__':
     containers = out.split('\n')
     title = containers[0]
     names_offset = title.index('NAMES')
-    for c in containers[1:] if c:
-        print(c[names_offset:])
+    for c in containers[1:]:
+        if c:
+            print(c[names_offset:])
