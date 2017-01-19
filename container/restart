@@ -7,7 +7,7 @@ from container import Container
 if __name__ == '__main__':
     containers = sys.argv[1:]
     if len(containers) != 1:
-        print('usage:ipof container')
+        print('usage:restart container')
         sys.exit(1)
     container = Container(containers[0])
     ips = container.ip()
