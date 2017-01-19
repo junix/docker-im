@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-MYIP="ddddddd"
-ETCD_ENDPOINTS="http://10.10.31.56:2379,http://10.10.53.26:2379,http://10.10.60.240:2379,http://10.10.39.177:2379,http://10.10.38.126:2379"
+MYIP="__MYIP__"
+ETCD_ENDPOINTS="__ETCD_ENDPOINTS__"
 
 CURRENT_ID=$(etcdctl --peers $ETCD_ENDPOINTS member list | grep "peerURLs=http://${MYIP}:2380" | awk -F: '{print $1}' | sed  's/\[.*\]//')
 
