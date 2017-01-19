@@ -12,7 +12,7 @@ class KafkaCmd(DockerCmd):
     def __init__(self, broker_id):
         DockerCmd.__init__(self)
         self.node_id = broker_id
-        self.use_image('junix/kafka').\
+        self.use_image('yunxuetang/kafka:2.9.1').\
             daemon_mode().\
             with_name(self.instance_name()).\
             copy_os_env('ZOOKEEPER', utils.zk_env()). \

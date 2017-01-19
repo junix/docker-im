@@ -1,2 +1,2 @@
 all:
-	docker build -t junix/kafka .
+	docker build -t yunxuetang/kafka:2.9.1 .
