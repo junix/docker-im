@@ -2,22 +2,27 @@
 INTERNAL_IP="__INTERNAL_IP__"
 ETCD_ENDPOINTS="__ETCD_ENDPOINTS__"
 
+# 查询历史上的ID
 CURRENT_ID=$(etcdctl --peers $ETCD_ENDPOINTS member list | grep "peerURLs=http://${INTERNAL_IP}:2380" | awk -F: '{print $1}' | sed  's/\[.*\]//')
 
 if [[ "x$CURRENT_ID" != "x" ]]
 then
+    # 删除上次的ID
     etcdctl --peers $ETCD_ENDPOINTS member remove $CURRENT_ID
     sleep 1
 fi
 
 rm -rf /mnt1/etcd/*
 
+# 加入集群，产生配置文件
 res=$(etcdctl --peers $ETCD_ENDPOINTS member add $(hostname) http://${INTERNAL_IP}:2380 | grep ETCD_)
 
 echo $res | sed 's/^/export /g' >/tmp/etcd_join_env
 
+# 获取最新的集群变量
 source /tmp/etcd_join_env
 
+# 启动实例
 CMD="etcd --listen-client-urls http://${INTERNAL_IP}:2379,http://127.0.0.1:4001 \
      --data-dir /mnt1/etcd \
      --advertise-client-urls http://${INTERNAL_IP}:2379 \
