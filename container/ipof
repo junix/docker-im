@@ -9,7 +9,6 @@ if __name__ == '__main__':
         print('usage:ipof containers')
         sys.exit(1)
     for c in containers:
-        container = Container(c)
-        ips = container.ip()
+        ips = Container(c).ip()
         print('none' if not ips else ','.join(ips))
 
