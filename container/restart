@@ -11,6 +11,10 @@ if __name__ == '__main__':
     container = Container(containers[0])
     ips = container.ip()
     for ip in ips:
-        os.system('calicoctl ipam release --ip={ip}'.format(ip=ip))
-    os.system('docker start {container}'.format(container=containers[0]))
+        cmd = 'calicoctl ipam release --ip={ip}'.format(ip=ip)
+        print(cmd)
+        os.system(cmd)
+    cmd = 'docker start {container}'.format(container=containers[0])
+    print(cmd)
+    os.system(cmd)
 
