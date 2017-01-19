@@ -4,7 +4,7 @@ import os
 import getopt
 
 from docker_cmd import DockerCmd
-from utils import zk_env
+import utils
 
 
 class BackendCmd(DockerCmd):
@@ -16,7 +16,7 @@ class BackendCmd(DockerCmd):
         self.daemon = True
         self.name = self.full_name()
         self.network = 'maxwell'
-        self.copy_os_env('ZOOKEEPER', zk_env()). \
+        self.copy_os_env('ZOOKEEPER', utils.zk_env()). \
             with_restart(False).\
             copy_os_env('GROUP_ID', can_ignore=False). \
             with_mount_from_env('DATA_DIR', '/app/data'). \
@@ -42,7 +42,10 @@ if __name__ == "__main__":
     if not hosts:
         usage()
         sys.exit(1)
+    unused_ips = utils.unused_ip_of('maxwell')
     for index, host in enumerate(hosts):
-        c = BackendCmd(index).exec_in(host)
         dryrun = '--dryrun' in dict(optlist).keys()
-        c.execute(dryrun=dryrun)
+        c = BackendCmd(index)
+        c.exec_in(host).\
+            with_network('maxwell', ip=unused_ips.pop()).\
+            execute(dryrun=dryrun)
