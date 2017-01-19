@@ -2,14 +2,15 @@
 rm -rvf /mnt1/etcd/*
 etcd -name $(hostname) \
   --data-dir /mnt1/etcd \
-  -initial-advertise-peer-urls http://${MYIP}:2380 \
-  -listen-peer-urls http://${MYIP}:2380 \
-  -listen-client-urls http://${MYIP}:2379,http://127.0.0.1:4001 \
-  -advertise-client-urls http://${MYIP}:2379 \
+  -initial-advertise-peer-urls http://${INTERNAL_IP}:2380 \
+  -listen-peer-urls http://${INTERNAL_IP}:2380 \
+  -listen-client-urls http://${INTERNAL_IP}:2379,http://127.0.0.1:4001 \
+  -advertise-client-urls http://${INTERNAL_IP}:2379 \
   -initial-cluster-token etcd-cluster-starfish \
   -initial-cluster \
-i901-bj=http://10.10.191.38:2380,\
-i902-bj=http://10.10.181.41:2380,\
-i204-gd=http://10.10.128.69:2380,\
-i205-gd=http://10.10.116.204:2380\
+i821-bj=http://10.10.31.56:2380,\
+i822-bj=http://10.10.53.26:2380,\
+i823-bj=http://10.10.60.240:2380,\
+i824-bj=http://10.10.39.177:2380,\
+i825-bj=http://10.10.38.126:2380\
   -initial-cluster-state new>/dev/null
