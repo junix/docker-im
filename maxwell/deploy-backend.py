@@ -42,10 +42,10 @@ if __name__ == "__main__":
     if not hosts:
         usage()
         sys.exit(1)
-    unused_ips = utils.unused_ip_of('maxwell')
+    free_ip_list = utils.unused_ip_of('maxwell')
     for index, host in enumerate(hosts):
         dryrun = '--dryrun' in dict(optlist).keys()
         c = BackendCmd(index)
         c.exec_in(host). \
-            with_network('maxwell', ip=unused_ips.send(None)). \
+            with_network('maxwell', ip=free_ip_list.send(None)). \
             execute(dryrun=dryrun)

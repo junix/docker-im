@@ -6,9 +6,9 @@ import utils
 if __name__ == '__main__':
     networks = sys.argv[1:]
     if not networks:
-        print('usage:unsignedipof network')
+        print('usage:assignedipof network')
         sys.exit(1)
     for network in networks:
-        for ip in utils.unused_ip_of(network):
+        for ip in utils.used_ip_of(network):
             print(ip)
 
