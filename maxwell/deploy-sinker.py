@@ -36,4 +36,5 @@ if __name__ == "__main__":
         SinkerCmd(index).\
             exec_in(host).\
             limit_memory('500m').\
+            limit_cpu_shares('512').\
             execute(dryrun='--dryrun' in dict(optlist).keys())

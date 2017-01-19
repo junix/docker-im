@@ -23,6 +23,7 @@ class DockerCmd:
         self.env = {}
         self.mount = {}
         self.memory = None
+        self.cpu_shares = None
         self.remote_exec_host = None
 
     def use_image(self, image_name):
@@ -54,6 +55,10 @@ class DockerCmd:
 
     def limit_memory(self, memory):
         self.memory = memory
+        return self
+
+    def limit_cpu_shares(self, shares):
+        self.cpu_shares = shares
         return self
 
     def copy_os_env(self, key, default_value=None, can_ignore=True):
@@ -94,7 +99,8 @@ class DockerCmd:
         mounts = ' '.join(['-v {device}:{dir}'.format(dir=k, device=v.format(instance=self.name))
                            for k, v in self.mount.items()])
         memory_limit = '--memory={quota}'.format(quota=self.memory) if self.memory else ''
-        opt_seq = [basic, restart, network, ip, name, env_list, mounts, memory_limit, mode, self.image]
+        cpu_shares = '--cpu-shares={quota}'.format(quota=self.cpu_shares) if self.cpu_shares else ''
+        opt_seq = [basic, restart, network, ip, name, env_list, mounts, cpu_shares, memory_limit, mode, self.image]
         cmd = ' '.join([o for o in opt_seq if o])
         if not self.remote_exec_host:
             return cmd
