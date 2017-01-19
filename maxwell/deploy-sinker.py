@@ -29,12 +29,14 @@ def usage():
 
 
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'm:c:', ['dryrun'])
     if not hosts:
         usage()
+    memory_limit = int(dict(optlist).get('-m', '500m'))
+    cpu_shares = int(dict(optlist).get('-c', '512'))
     for index, host in enumerate(hosts):
         SinkerCmd(index).\
             exec_in(host).\
-            limit_memory('500m').\
-            limit_cpu_shares('512').\
+            limit_memory(memory_limit).\
+            limit_cpu_shares(cpu_shares).\
             execute(dryrun='--dryrun' in dict(optlist).keys())
