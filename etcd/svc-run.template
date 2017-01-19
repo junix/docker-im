@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-MYIP="__MYIP__"
+INTERNAL_IP="__INTERNAL_IP__"
 ETCD_ENDPOINTS="__ETCD_ENDPOINTS__"
 
-CURRENT_ID=$(etcdctl --peers $ETCD_ENDPOINTS member list | grep "peerURLs=http://${MYIP}:2380" | awk -F: '{print $1}' | sed  's/\[.*\]//')
+CURRENT_ID=$(etcdctl --peers $ETCD_ENDPOINTS member list | grep "peerURLs=http://${INTERNAL_IP}:2380" | awk -F: '{print $1}' | sed  's/\[.*\]//')
 
 if [[ "x$CURRENT_ID" != "x" ]]
 then
@@ -12,16 +12,16 @@ fi
 
 rm -rf /mnt1/etcd/*
 
-res=$(etcdctl --peers $ETCD_ENDPOINTS member add $(hostname) http://${MYIP}:2380 | grep ETCD_)
+res=$(etcdctl --peers $ETCD_ENDPOINTS member add $(hostname) http://${INTERNAL_IP}:2380 | grep ETCD_)
 
 echo $res | sed 's/^/export /g' >/tmp/etcd_join_env
 
 source /tmp/etcd_join_env
 
-CMD="etcd --listen-client-urls http://${MYIP}:2379,http://127.0.0.1:4001 \
+CMD="etcd --listen-client-urls http://${INTERNAL_IP}:2379,http://127.0.0.1:4001 \
      --data-dir /mnt1/etcd \
-     --advertise-client-urls http://${MYIP}:2379 \
-     --listen-peer-urls http://${MYIP}:2380 \
-     --initial-advertise-peer-urls http://${MYIP}:2380"
+     --advertise-client-urls http://${INTERNAL_IP}:2379 \
+     --listen-peer-urls http://${INTERNAL_IP}:2380 \
+     --initial-advertise-peer-urls http://${INTERNAL_IP}:2380"
 
 exec setuidgid root $CMD>/dev/null
