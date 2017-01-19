@@ -35,4 +35,5 @@ if __name__ == "__main__":
     for index, host in enumerate(hosts):
         SinkerCmd(index).\
             exec_in(host).\
+            limit_memory('500m').\
             execute(dryrun='--dryrun' in dict(optlist).keys())
