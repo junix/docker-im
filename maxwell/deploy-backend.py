@@ -43,7 +43,7 @@ if __name__ == "__main__":
         usage()
         sys.exit(1)
     unused_ips = utils.unused_ip_of('maxwell')
-    for index, (host, ip) in enumerate(hosts):
+    for index, host in enumerate(hosts):
         dryrun = '--dryrun' in dict(optlist).keys()
         c = BackendCmd(index)
         c.exec_in(host). \
