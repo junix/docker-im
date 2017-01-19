@@ -15,7 +15,8 @@ class KafkaCmd(DockerCmd):
         self.use_image('junix/kafka').\
             daemon_mode().\
             with_name(self.instance_name()).\
-            copy_os_env('ZOOKEEPER', utils.zk_env(count=5)). \
+            copy_os_env('ZOOKEEPER', utils.zk_env()). \
+            copy_os_env('KAFKA_HEAP_OPTS'). \
             with_env('BROKER_ID', broker_id). \
             with_network(network='kafka', ip=utils.ip_of('kafka', broker_id)). \
             with_mount_from_env('DATA_DIR', '/app/data'). \
