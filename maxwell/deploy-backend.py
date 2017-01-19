@@ -17,10 +17,10 @@ class BackendCmd(DockerCmd):
         self.name = self.full_name()
         self.network = 'maxwell'
         self.copy_os_env('ZOOKEEPER', utils.zk_env()). \
-            with_restart(False).\
+            with_restart(False). \
             copy_os_env('GROUP_ID', can_ignore=False). \
             with_mount_from_env('DATA_DIR', '/app/data'). \
-            with_mount_from_env('LOG_DIR', '/app/log').\
+            with_mount_from_env('LOG_DIR', '/app/log'). \
             with_env('PARTITION_ID', node_id)
 
     def full_name(self):
@@ -43,9 +43,9 @@ if __name__ == "__main__":
         usage()
         sys.exit(1)
     unused_ips = utils.unused_ip_of('maxwell')
-    for index, host in enumerate(hosts):
+    for index, (host, ip) in enumerate(zip(hosts, unused_ips)):
         dryrun = '--dryrun' in dict(optlist).keys()
         c = BackendCmd(index)
-        c.exec_in(host).\
-            with_network('maxwell', ip=unused_ips.pop()).\
+        c.exec_in(host). \
+            with_network('maxwell', ip=ip). \
             execute(dryrun=dryrun)
