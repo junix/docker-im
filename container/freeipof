@@ -9,6 +9,6 @@ if __name__ == '__main__':
         print('usage:freeipof network')
         sys.exit(1)
     for network in networks:
-        for ip in utils.unused_ip_of(network):
+        for ip in utils.free_ip_list_of(network):
             print(ip)
 
