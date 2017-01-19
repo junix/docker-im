@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ "${MYIP}" == "" ]]; then
-    echo 'env MYIP must set'
+if [[ "${INTERNAL_IP}" == "" ]]; then
+    echo 'env INTERNAL_IP must set'
 fi
 
 function install_repo_file {
@@ -36,10 +36,10 @@ function conf_docker() {
     echo "OPTIONS=\"-g /mnt1/docker \
 --log-opt max-size=10m \
 --log-opt max-file=10 \
--H tcp://${MYIP}:2375 \
+-H tcp://${INTERNAL_IP}:2375 \
 -H unix:///var/run/docker.sock \
 --cluster-store=${ETCD_URL:-etcd://-127.0.0.1:4001} \
---cluster-advertise=${MYIP}:2375\"" > ${SYS_CONF}
+--cluster-advertise=${INTERNAL_IP}:2375\"" > ${SYS_CONF}
 }
 
 function install_systemd() {
