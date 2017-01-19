@@ -47,12 +47,16 @@ def ip_of(name, index):
     return re.sub('0$', str(index), network_of(name))
 
 
+def assigned(res):
+    return ('is not assigned' not in res) and ('is not currently assigned' not in res)
+
+
 def used_ip_of(name):
     cmd = 'calicoctl ipam show --ip={ip}'
     for index in range(1,255):
         ip = ip_of(name, index)
         res = exec_cmd(cmd.format(ip=ip))
-        if 'is not currently assigned' not in res:
+        if assigned(res):
             yield ip
 
 
@@ -61,5 +65,5 @@ def unused_ip_of(name):
     for index in range(1,255):
         ip = ip_of(name, index)
         res = exec_cmd(cmd.format(ip=ip))
-        if 'is not currently assigned' in res:
+        if not assigned(res):
             yield ip
