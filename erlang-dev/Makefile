@@ -1,6 +1,6 @@
 all:
-	docker build -t "junix/maxwell-dev:latest" .
+	docker build -t "yunxuetang/maxwell-dev:latest" .
 
 pub:
-	docker push junix/maxwell-dev
+	docker push yunxuetang/maxwell-dev
 
