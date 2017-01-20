@@ -14,7 +14,7 @@ class MasterCmd(DockerCmd):
         name_prefix = os.getenv('NAME_PREFIX', 'm')
         group_id = int(os.getenv("GROUP_ID", '0'))
         node_ip = utils.ip_of('master', ip_offset + node_id)
-        self.use_image('junix/maxwell_master').daemon_mode(). \
+        self.use_image('yunxuetang/maxwell_master').daemon_mode(). \
             with_network(network='master', ip=node_ip). \
             with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
             copy_os_env('ZOOKEEPER', utils.zk_env()). \
