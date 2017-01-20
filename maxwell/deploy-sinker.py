@@ -35,6 +35,7 @@ if __name__ == '__main__':
     optlist, hosts = getopt.getopt(sys.argv[1:], 'm:c:', ['dryrun'])
     if not hosts:
         usage()
+        sys.exit(1)
     options = dict(optlist)
     memory_limit = options.get('-m', '500m')
     cpu_shares = options.get('-c', '512')
