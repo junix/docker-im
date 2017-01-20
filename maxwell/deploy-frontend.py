@@ -13,11 +13,12 @@ class FrontendCmd(DockerCmd):
         DockerCmd.__init__(self)
         name_prefix = os.getenv('NAME_PREFIX', 'f')
         group_id = int(os.getenv("GROUP_ID", '0'))
-        self.use_image('junix/maxwell_frontend').daemon_mode(). \
+        self.use_image('yunxuetang/maxwell_frontend').daemon_mode(). \
             with_network(network='host'). \
             with_name('{prefix}g{gid}p{pid}'.format(prefix=name_prefix, gid=group_id, pid=node_id)). \
             copy_os_env('ZOOKEEPER', utils.zk_env()). \
             copy_os_env('GROUP_ID', can_ignore=False). \
+            copy_os_env('INTERNAL_IP'). \
             copy_os_env('EXTERNAL_IP', can_ignore=False). \
             copy_os_env('EXTERNAL_PORT', default_value=2013). \
             with_env('NODE_ID', node_id)
