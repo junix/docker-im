@@ -19,10 +19,10 @@ class ConvStoreCmd(docker_cmd.DockerCmd):
             with_env('NODE_ID', node_id)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     optlist, hosts = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
     if not hosts:
-        print("usage:deploy-convstore [-f | --dryrun] hosts")
+        print('usage:deploy-convstore [-f | --dryrun] hosts')
         sys.exit(1)
     options = dict(optlist)
     offset = int(dict(optlist).get('-f', '1'))
