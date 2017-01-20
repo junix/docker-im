@@ -12,7 +12,7 @@ class BackendCmd(DockerCmd):
         DockerCmd.__init__(self)
         self.node_id = node_id
         self.group_id = int(os.getenv("GROUP_ID", '0'))
-        self.image = 'junix/maxwell_backend'
+        self.image = 'yunxuetang/maxwell_backend'
         self.daemon = True
         self.name = self.full_name()
         self.network = 'maxwell'
