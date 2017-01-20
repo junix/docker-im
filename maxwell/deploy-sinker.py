@@ -11,7 +11,7 @@ class SinkerCmd(DockerCmd):
     def __init__(self, node_id):
         DockerCmd.__init__(self)
         name_prefix = os.getenv('NAME_PREFIX', 'sinker')
-        self.use_image('junix/sinker').\
+        self.use_image('yunxuetang/sinker').\
             daemon_mode(). \
             with_network(network='sinker'). \
             with_name('{prefix}{id}'.format(prefix=name_prefix, id=node_id)). \
