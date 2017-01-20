@@ -12,7 +12,7 @@ class ConvStoreCmd(docker_cmd.DockerCmd):
         name_prefix = os.getenv('NAME_PREFIX', 'convstore')
         name = '{prefix}{id}'.format(prefix=name_prefix, id=node_id)
         node_ip = utils.ip_of('conv_store', ip_offset + node_id)
-        self.use_image('junix/conv_store').daemon_mode(). \
+        self.use_image('yunxuetang/conv_store').daemon_mode(). \
             with_network(network='conv_store', ip=node_ip). \
             with_name(name).\
             copy_os_env('ZOOKEEPER', utils.zk_env()). \
