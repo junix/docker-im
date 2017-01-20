@@ -47,6 +47,9 @@ class DockerCmd:
 
     def with_name(self, name):
         self.name = name
+        name_prefix = os.getenv('NAME_PREFIX')
+        if name_prefix and self.name:
+            self.name = name_prefix + self.name
         return self
 
     def with_env(self, key, value):
