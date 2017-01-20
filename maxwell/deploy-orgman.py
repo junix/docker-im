@@ -15,7 +15,7 @@ class OrgmanCmd(DockerCmd):
         name = '{prefix}{pid}'.format(
             prefix=os.getenv('NAME_PREFIX', 'orgman'),
             pid=pid)
-        self.use_image('junix/orgman').\
+        self.use_image('yunxuetang/orgman').\
             daemon_mode(). \
             with_name(name).\
             with_network(network='orgman', ip=ip). \
