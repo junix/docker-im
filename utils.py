@@ -28,6 +28,13 @@ def exec_cmd(cmd):
     return out
 
 
+def run(cmd, dryrun=False):
+    if dryrun:
+        print(cmd)
+    else:
+        os.system(cmd)
+
+
 # ===========================
 # === configuration utils ===
 # ===========================
