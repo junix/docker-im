@@ -1,6 +1,6 @@
 all:
-	docker build -t "yunxuetang/maxwell-dev:latest" .
+	docker build -t "yunxuetang/erlang-dev:latest" .
 
 pub:
-	docker push yunxuetang/maxwell-dev
+	docker push yunxuetang/erlang-dev
 
