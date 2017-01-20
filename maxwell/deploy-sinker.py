@@ -10,13 +10,15 @@ class SinkerCmd(DockerCmd):
 
     def __init__(self, node_id):
         DockerCmd.__init__(self)
-        name_prefix = os.getenv('NAME_PREFIX', 'sinker')
+        name_prefix = os.getenv('NAME_PREFIX', '')
         self.use_image('yunxuetang/sinker').\
             daemon_mode(). \
             with_network(network='sinker'). \
-            with_name('{prefix}{id}'.format(prefix=name_prefix, id=node_id)). \
+            with_name('{prefix}_sinker{id}'.format(prefix=name_prefix, id=node_id)). \
             copy_os_env('ZOOKEEPER', zk_env()). \
             copy_os_env('GROUP_ID', can_ignore=False). \
+            copy_os_env('NAME_PREFIX'). \
+            copy_os_env('PUBLISH_TOPIC'). \
             copy_os_env('PARTITIONS', can_ignore=False). \
             with_env('NODE_ID', node_id)
 
@@ -25,6 +27,7 @@ def usage():
     print("usage:./deploy-sinker.py [-n node_id_start_from] [--dryrun] hosts")
     print("env:   ZOOKEEPER=192.0.2.[1-5]:2181")
     print("       GROUP_ID")
+    print("       PUBLISH_TOPIC=conv_sinker")
     print("       PARTITIONS")
 
 
