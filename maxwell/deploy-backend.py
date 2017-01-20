@@ -24,28 +24,27 @@ class BackendCmd(DockerCmd):
             with_env('PARTITION_ID', node_id)
 
     def full_name(self):
-        return '{prefix}g{gid}p{pid}'.format(
-            prefix=os.getenv('NAME_PREFIX', 'b'),
+        prefix = os.getenv('NAME_PREFIX', '')
+        return '{prefix}bg{gid}p{pid}'.format(
+            prefix=prefix,
             gid=self.group_id,
             pid=self.node_id)
 
-
-def usage():
-    print("""usage:deploy-backend hosts
+    def usage():
+        print("""usage:deploy-backend hosts
     env: ZOOKEEPER default 192.0.2.[1-5]:2181
          GROUP_ID
          NAME_PREFIX default nil""")
 
-
-if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
-    if not hosts:
-        usage()
-        sys.exit(1)
-    free_ip_list = utils.free_ip_list_of('maxwell')
-    for index, host in enumerate(hosts):
-        dryrun = '--dryrun' in dict(optlist).keys()
-        c = BackendCmd(index)
-        c.exec_in(host). \
-            with_network('maxwell', ip=free_ip_list.send(None)). \
-            execute(dryrun=dryrun)
+    if __name__ == "__main__":
+        optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+        if not hosts:
+            usage()
+            sys.exit(1)
+        free_ip_list = utils.free_ip_list_of('maxwell')
+        for index, host in enumerate(hosts):
+            dryrun = '--dryrun' in dict(optlist).keys()
+            c = BackendCmd(index)
+            c.exec_in(host). \
+                with_network('maxwell', ip=free_ip_list.send(None)). \
+                execute(dryrun=dryrun)

@@ -9,8 +9,8 @@ import utils
 class ConvStoreCmd(docker_cmd.DockerCmd):
     def __init__(self, ip_offset, node_id):
         docker_cmd.DockerCmd.__init__(self)
-        name_prefix = os.getenv('NAME_PREFIX', 'convstore')
-        name = '{prefix}{id}'.format(prefix=name_prefix, id=node_id)
+        name_prefix = os.getenv('NAME_PREFIX', '')
+        name = '{prefix}_convstore{id}'.format(prefix=name_prefix, id=node_id)
         node_ip = utils.ip_of('conv_store', ip_offset + node_id)
         self.use_image('yunxuetang/conv_store').daemon_mode(). \
             with_network(network='conv_store', ip=node_ip). \
