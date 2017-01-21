@@ -41,4 +41,4 @@ if __name__ == '__main__':
     for index, host in enumerate(hosts):
         FrontendCmd(index).\
             exec_in(host).\
-            execute('--dryrun' in dict(optlist))
+            run('--dryrun' in dict(optlist))

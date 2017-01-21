@@ -29,4 +29,4 @@ if __name__ == '__main__':
     for index, host in enumerate(hosts):
         ConvStoreCmd(ip_offset=offset, node_id=index).\
             exec_in(host).\
-            execute(dryrun='--dryrun' in options)
+            run(dryrun='--dryrun' in options)

@@ -40,4 +40,4 @@ if __name__ == '__main__':
         pid = index + start_from
         OrgmanCmd(offset=ip_offset, node_id=pid).\
             exec_in(host).\
-            execute(dryrun='--dryrun' in options)
+            run(dryrun='--dryrun' in options)

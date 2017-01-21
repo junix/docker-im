@@ -62,4 +62,4 @@ if __name__ == '__main__':
         CassandraCommand(index, ip_off). \
             exec_in(host). \
             limit_memory(memory_limit).\
-            execute('--dryrun' in options)
+            run('--dryrun' in options)

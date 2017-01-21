@@ -51,7 +51,9 @@ def network_of(name):
 
 
 def ip_of(name, index):
-    return re.sub('0$', str(index), network_of(name))
+    ip_offset = int(os.getenv('IP_OFFSET', '1'))
+    print(ip_offset)
+    return re.sub('0$', str(index+ip_offset), network_of(name))
 
 
 def assigned(res):

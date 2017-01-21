@@ -44,4 +44,4 @@ if __name__ == '__main__':
             exec_in(host).\
             limit_memory(memory_limit).\
             limit_cpu_shares(cpu_shares).\
-            execute(dryrun='--dryrun' in options)
+            run(dryrun='--dryrun' in options)

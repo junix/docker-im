@@ -111,7 +111,7 @@ class DockerCmd:
         print(self)
         return self
 
-    def execute(self, dryrun=False):
+    def run(self, dryrun=False):
         if dryrun:
             print(self)
         else:

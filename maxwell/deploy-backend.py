@@ -42,4 +42,4 @@ if __name__ == "__main__":
         BackendCmd(index).\
             exec_in(host). \
             with_network('maxwell', ip=free_ip_list.send(None)). \
-            execute(dryrun=dryrun)
+            run(dryrun=dryrun)

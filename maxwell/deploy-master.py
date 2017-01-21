@@ -38,4 +38,4 @@ if __name__ == '__main__':
     for index, host in enumerate(hosts):
         MasterCmd(node_id=index, ip_offset=offset).\
             exec_in(host).\
-            execute('--dryrun' in options)
+            run('--dryrun' in options)
