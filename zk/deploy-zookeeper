@@ -12,7 +12,7 @@ class ZkCommand(docker_cmd.DockerCmd):
         self.index = instance_index
         self.offset = offset
         self.name = self.instance_name(instance_index + offset)
-        self.conf = self.generate_server_conf(instance_list, offset)
+        self.conf = self.server_conf(len(instance_list), offset)
         ip = utils.ip_of('zookeeper', self.index + self.offset)
         self.use_image('zookeeper:3.4.9'). \
             daemon_mode(). \
@@ -24,32 +24,34 @@ class ZkCommand(docker_cmd.DockerCmd):
 
     @classmethod
     def instance_name(cls, instance_id):
-        base_name = "zk{index}".format(index=instance_id)
+        base_name = 'zk{index}'.format(index=instance_id)
         prefix = os.getenv('NAME_PREFIX')
         return base_name if not prefix else prefix + base_name
 
     @classmethod
-    def generate_server_conf(cls, instance_list, offset=0):
-        conf_list = ["server.{index}={instance}:2888:3888".format(
+    def server_conf(cls, instance_count, offset=0):
+        server_list = ['server.{index}={instance}:2888:3888'.format(
             index=i + 1,
-            instance=cls.instance_name(i + offset)) for i in range(len(instance_list))]
-        return ' '.join(conf_list)
+            instance=cls.instance_name(i + offset)) for i in range(instance_count)]
+        return ' '.join(server_list)
 
 
 def usage():
-    print("""usage:./deploy-zookeeper [-f from_ip] [--dryrun] hosts
-env: DATA_DIR     : -v $DATA_DIR/{instance}:/data
-     DATA_LOG_DIR : -v $DATA_LOG_DIR/{instance}:/datalog""")
+    print('''usage:./deploy-zookeeper [-f from_ip] [--dryrun] hosts
+env: DATA_DIR     : -v ${DATA_DIR}/{instance}:/data
+     DATA_LOG_DIR : -v ${DATA_LOG_DIR}/{instance}:/datalog
+     NAME_PREFIX  : --name ${NAME_PREFIX}zk{index}
+     ''')
 
 
-if __name__ == "__main__":
-    optlist, instances = getopt.getopt(sys.argv[1:], "f:", ["dryrun"])
-    if not instances:
+if __name__ == '__main__':
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:', ['dryrun'])
+    if not hosts:
         usage()
         sys.exit(1)
     options = dict(optlist)
     ip_offset = int(options.get('-f', '1'))
-    for index, host in enumerate(instances):
-        ZkCommand(instances, index, ip_offset).\
+    for index, host in enumerate(hosts):
+        ZkCommand(hosts, index, ip_offset).\
             exec_in(host).\
             execute('--dryrun' in options)
