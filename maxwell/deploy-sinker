@@ -27,6 +27,7 @@ def usage():
     print('usage:deploy-sinker [-n START_FROM | -m MEMORY -c CPU_SHARES] [--dryrun] hosts')
     print('env:   ZOOKEEPER=192.0.2.[1-5]:2181')
     print('       GROUP_ID')
+    print('       NAME_PREFIX')
     print('       PUBLISH_TOPIC=conv_sinker')
     print('       PARTITIONS')
 

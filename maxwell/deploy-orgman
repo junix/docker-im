@@ -8,10 +8,10 @@ import utils
 
 
 class OrgmanCmd(DockerCmd):
-    def __init__(self, node_id, offset):
+    def __init__(self, node_id):
         DockerCmd.__init__(self)
         self.pid = node_id
-        ip = utils.ip_of('orgman', node_id + offset)
+        ip = utils.ip_of('orgman', node_id)
         name = 'orgman{pid}'.format(pid=node_id)
         self.use_image('yunxuetang/orgman').\
             daemon_mode(). \
@@ -25,9 +25,9 @@ class OrgmanCmd(DockerCmd):
 
 
 if __name__ == '__main__':
-    optlist, hosts = getopt.getopt(sys.argv[1:], 'f:n:', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:', ['dryrun'])
     if not hosts:
-        print('''usage:./deploy-orgman.py [-n node_id_start_from] [--dryrun] hosts
+        print('''usage:./deploy-orgman [-n node_id_start_from] [--dryrun] hosts
     env:   ZOOKEEPER=192.0.2.[1-5]:2181')
            DATA_DIR
            LOG_DIR
@@ -35,9 +35,6 @@ if __name__ == '__main__':
         sys.exit(1)
     options = dict(optlist)
     start_from = int(options.get('-n', '0'))
-    ip_offset = int(options.get('-f', '1'))
     for index, host in enumerate(hosts):
         pid = index + start_from
-        OrgmanCmd(offset=ip_offset, node_id=pid).\
-            exec_in(host).\
-            run(dryrun='--dryrun' in options)
+        OrgmanCmd(node_id=pid).exec_in(host).run(dryrun='--dryrun' in options)
