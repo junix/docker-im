@@ -1,8 +1,6 @@
 import os
 import re
 
-__author__ = 'junix'
-
 
 class DockerCmd:
     @classmethod
@@ -89,7 +87,7 @@ class DockerCmd:
         self.remote_exec_host = host
         return self
 
-    def command(self):
+    def __repr__(self):
         if not self.image:
             raise ValueError('image name is nil')
         basic = 'docker run'
@@ -110,11 +108,11 @@ class DockerCmd:
         return self.ssh_cmd(self.remote_exec_host, cmd)
 
     def show(self):
-        print(self.command())
+        print(self)
         return self
 
     def execute(self, dryrun=False):
         if dryrun:
-            self.show()
+            print(self)
         else:
-            os.system(self.command())
+            os.system(str(self))

@@ -24,31 +24,31 @@ class ZkCommand(docker_cmd.DockerCmd):
 
     @classmethod
     def instance_name(cls, instance_id):
-        return "{name_prefix}{index}".format(
-            name_prefix=os.getenv('NAME_PREFIX', 'zk'),
-            index=instance_id)
+        base_name = "zk{index}".format(index=instance_id)
+        prefix = os.getenv('NAME_PREFIX')
+        return base_name if not prefix else prefix + base_name
 
     @classmethod
-    def generate_server_conf(cls, instance_list, ip_offset=0):
+    def generate_server_conf(cls, instance_list, offset=0):
         conf_list = ["server.{index}={instance}:2888:3888".format(
             index=i + 1,
-            instance=cls.instance_name(i + ip_offset)) for i in range(0, len(instance_list))]
+            instance=cls.instance_name(i + offset)) for i in range(len(instance_list))]
         return ' '.join(conf_list)
 
 
 def usage():
-    print("""usage:./deploy-zookeeper.py [-f from_ip] [--dryrun] hosts
+    print("""usage:./deploy-zookeeper [-f from_ip] [--dryrun] hosts
 env: DATA_DIR     : -v $DATA_DIR/{instance}:/data
      DATA_LOG_DIR : -v $DATA_LOG_DIR/{instance}:/datalog""")
 
 
 if __name__ == "__main__":
     optlist, instances = getopt.getopt(sys.argv[1:], "f:", ["dryrun"])
-    options = dict(optlist)
     if not instances:
         usage()
         sys.exit(1)
-    ip_offset = int(dict(options).get('-f', '1'))
+    options = dict(optlist)
+    ip_offset = int(options.get('-f', '1'))
     for index, host in enumerate(instances):
         ZkCommand(instances, index, ip_offset).\
             exec_in(host).\
