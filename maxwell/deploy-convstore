@@ -11,19 +11,20 @@ class ConvStoreCmd(docker_cmd.DockerCmd):
         docker_cmd.DockerCmd.__init__(self)
         name = 'convstore{id}'.format(id=node_id)
         node_ip = utils.ip_of('conv_store', node_id)
-        self.use_image('yunxuetang/conv_store').\
+        self.use_image('yunxuetang/conv_store'). \
             daemon_mode(). \
             with_network(network='conv_store', ip=node_ip). \
-            with_name(name).\
+            with_name(name). \
             copy_os_env('ZOOKEEPER', utils.zk_env()). \
             with_env('NODE_ID', node_id)
 
 
 if __name__ == '__main__':
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:', ['dryrun'])
     if not hosts:
-        print('usage:deploy-convstore [--dryrun] hosts')
+        print('usage:deploy-convstore [-n ID_OFFSET | --dryrun] hosts')
         sys.exit(1)
     options = dict(optlist)
+    id_offset = int(options.get('-n', '0'))
     for index, host in enumerate(hosts):
-        ConvStoreCmd(node_id=index).exec_in(host).run(dryrun='--dryrun' in options)
+        ConvStoreCmd(node_id=index + id_offset).exec_in(host).run(dryrun='--dryrun' in options)
