@@ -32,14 +32,16 @@ env: ZOOKEEPER
 
 
 if __name__ == "__main__":
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:', ['dryrun'])
     if not hosts:
         usage()
         sys.exit(1)
+    options = dict(optlist)
     free_ip_list = utils.free_ip_list_of('maxwell')
+    id_offset = int(options.get('-n', '0'))
     for index, host in enumerate(hosts):
         dryrun = '--dryrun' in dict(optlist).keys()
-        BackendCmd(index).\
+        BackendCmd(index+id_offset).\
             exec_in(host). \
             with_network('maxwell', ip=free_ip_list.send(None)). \
             run(dryrun=dryrun)
