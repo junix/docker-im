@@ -13,6 +13,5 @@ if __name__ == '__main__':
         print('usage: sync_images -i IMAGE hosts')
         sys.exit(1)
     for host in hosts:
-        c = cmd.format(image=image,remote=host)
+        c = cmd.format(image=image, remote=host)
         os.system(c)
-
