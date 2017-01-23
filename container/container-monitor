@@ -31,6 +31,7 @@ if __name__ == '__main__':
     if options.get('-c'):
         conf = options.get('-c')
     while True:
+        time.sleep(20)
         ecs = set(existed_containers())
         mcs = set(monitored_containers())
         for c in mcs.difference(ecs):
@@ -41,6 +42,6 @@ if __name__ == '__main__':
                 log.error('%r is not running:%r' % (container, container.status()))
                 container.release_ip()
                 container.start()
-        time.sleep(20)
+                time.sleep(20)
 
 
