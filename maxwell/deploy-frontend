@@ -8,14 +8,13 @@ import utils
 
 
 class FrontendCmd(DockerCmd):
-
     def __init__(self, node_id):
         DockerCmd.__init__(self)
         name = 'fg{gid}p{pid}'.format(gid=os.getenv('GROUP_ID'), pid=node_id)
-        self.use_image('yunxuetang/maxwell_frontend').\
+        self.use_image('yunxuetang/maxwell_frontend'). \
             daemon_mode(). \
             with_network(network='host'). \
-            with_name(name).\
+            with_name(name). \
             copy_os_env('ZOOKEEPER', utils.zk_env()). \
             copy_os_env('GROUP_ID', can_ignore=False). \
             copy_os_env('EXTERNAL_IP', can_ignore=False). \
@@ -25,7 +24,7 @@ class FrontendCmd(DockerCmd):
 
 
 def usage():
-    print('''usage:deploy-frontend [--dryrun] hosts
+    print('''usage:deploy-frontend [-n | --dryrun] hosts
     env: ZOOKEEPER default 192.0.2.[1-5]:2181
          GROUP_ID
          EXTERNAL_PORT default 2013
@@ -38,7 +37,9 @@ if __name__ == '__main__':
     if not hosts:
         usage()
         sys.exit(1)
+    options = dict(optlist)
+    id_offset = int(options.get('-n', '0'))
     for index, host in enumerate(hosts):
-        FrontendCmd(index).\
-            exec_in(host).\
+        FrontendCmd(index + id_offset). \
+            exec_in(host). \
             run('--dryrun' in dict(optlist))

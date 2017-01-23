@@ -21,7 +21,7 @@ class MasterCmd(DockerCmd):
 
 
 def usage():
-    print('''usage:deploy-master [--dryrun] hosts
+    print('''usage:deploy-master [-n | --dryrun] hosts
     env: ZOOKEEPER default 192.0.2.[1-5]:2181
          GROUP_ID
          IP_OFFSET
