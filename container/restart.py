@@ -14,9 +14,4 @@ if __name__ == '__main__':
     dryrun = '--dryrun' in options
     for c in containers:
         container = Container(containers[0])
-        ips = container.ip()
-        for ip in ips:
-            cmd = 'calicoctl ipam release --ip={ip}'.format(ip=ip)
-            utils.run(cmd, dryrun)
-        cmd = 'docker start {container}'.format(container=containers[0])
-        utils.run(cmd, dryrun)
+        container.restart()

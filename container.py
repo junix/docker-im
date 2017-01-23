@@ -1,10 +1,14 @@
 import subprocess
 import json
+import utils
 
 
 class Container:
     def __init__(self, name):
         self.name = name
+
+    def __repr__(self):
+        return self.name
 
     def inspect(self):
         cmd = 'docker inspect {c}'.format(c=self.name)
@@ -16,6 +20,14 @@ class Container:
         if not inspects:
             raise ValueError('No inspect of {name}'.format(name=self.name))
         return inspects[0]
+
+    def status(self):
+        inspect = self.inspect0()
+        return inspect.get('State', {}).get('Status')
+
+    def is_running(self):
+        inspect = self.inspect0()
+        return inspect.get('State', {}).get('Running', False)
 
     def ip(self):
         ips = []
@@ -51,3 +63,22 @@ class Container:
                 ipv4_address = ipam_config.get('IPv4Address')
                 if ipv4_address:
                     yield '{network}:{ip}'.format(network=k, ip=ipv4_address)
+
+    def release_ip(self):
+        for ip in self.ip():
+            cmd = 'calicoctl ipam release --ip={ip}'.format(ip=ip)
+            utils.run(cmd)
+
+    def start(self):
+        cmd = 'docker start {container}'.format(container=self.name)
+        utils.run(cmd)
+
+    def stop(self):
+        cmd = 'docker stop {container}'.format(container=self.name)
+        utils.run(cmd)
+
+    def restart(self):
+        if self.is_running():
+            self.stop()
+        self.release_ip()
+        self.start()

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+MONITOR_SCRIPT=/opt/mos/codebase/docker-im/container/container-monitor
+CONF=/etc/container-monitor.conf
+LOG=/mnt1/logs/container-monitor.log
+exec setuidgid root ${MONITOR_SCRIPT} -c ${CONF}>${LOG}
