@@ -8,14 +8,13 @@ import utils
 
 
 class MasterCmd(DockerCmd):
-
     def __init__(self, node_id):
         DockerCmd.__init__(self)
         node_ip = utils.ip_of('master', node_id)
         name = 'mg{gid}p{pid}'.format(gid=os.getenv('GROUP_ID'), pid=node_id)
         self.use_image('yunxuetang/maxwell_master').daemon_mode(). \
             with_network(network='master', ip=node_ip). \
-            with_name(name).\
+            with_name(name). \
             copy_os_env('ZOOKEEPER', utils.zk_env()). \
             copy_os_env('GROUP_ID', can_ignore=False). \
             with_env('NODE_ID', node_id)
@@ -30,10 +29,11 @@ def usage():
 
 
 if __name__ == '__main__':
-    optlist, hosts = getopt.getopt(sys.argv[1:], '', ['dryrun'])
+    optlist, hosts = getopt.getopt(sys.argv[1:], 'n:', ['dryrun'])
     if not hosts:
         usage()
         sys.exit(1)
     options = dict(optlist)
+    id_offset = int(options.get('-n', '0'))
     for index, host in enumerate(hosts):
-        MasterCmd(node_id=index).exec_in(host).run('--dryrun' in options)
+        MasterCmd(node_id=index + id_offset).exec_in(host).run('--dryrun' in options)
