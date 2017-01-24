@@ -40,5 +40,5 @@ if __name__ == '__main__':
         sys.exit(1)
 
     for index, host in enumerate(instances):
-        c = KafkaCmd(index + 1).exec_in(host)
+        c = KafkaCmd(index).exec_in(host)
         c.run('--dryrun' in options)
