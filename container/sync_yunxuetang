@@ -8,7 +8,7 @@ if __name__ == '__main__':
     images = """docker images | awk '{print $1}'"""
     images = utils.exec_cmd(images).split('\n')[1:]
     for image in images:
-        if image:
+        if 'yunxuetang' in image:
             cmd = 'docker save {image} | ssh {remote} "docker load"'
             for host in sys.argv[1:]:
                 c = cmd.format(image=image, remote=host)
