@@ -5,12 +5,15 @@ import os
 import utils
 
 if __name__ == '__main__':
+    hosts = sys.argv[1:]
+    if not hosts:
+        print('usage:sync_yunxuetang hosts')
+        sys.exit(1)
     images = """docker images | awk '{print $1}'"""
     images = utils.exec_cmd(images).split('\n')[1:]
     for image in images:
         if 'yunxuetang' in image:
             cmd = 'docker save {image} | ssh {remote} "docker load"'
-            for host in sys.argv[1:]:
+            for host in hosts:
                 c = cmd.format(image=image, remote=host)
-                print(c)
                 os.system(c)
