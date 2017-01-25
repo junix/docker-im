@@ -6,7 +6,7 @@ import getopt
 from container import Container
 
 if __name__ == '__main__':
-    optlist, _ = getopt.getopt(sys.argv[1:], 'a:')
+    optlist, _ = getopt.getopt(sys.argv[1:], 'a')
     options = dict(optlist)
     for c in utils.docker_ps(list_all='-a' in options):
         print(c)
