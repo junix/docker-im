@@ -9,12 +9,10 @@ import subprocess
 
 
 def existed_containers():
-    cmd = 'docker ps -a'
-    out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
-    output = out.decode('utf8').split('\n')
-    title = output[0]
-    names_offset = title.index('NAMES')
-    return [c[names_offset:] for c in output[1:] if c]
+    css = utils.docker_ps(list_all=True, columns=['NAMES'])
+    for cs in css:
+        for c in cs:
+            yield c
 
 
 def monitored_containers():
@@ -45,5 +43,3 @@ if __name__ == '__main__':
                 container.release_ip()
                 container.start()
                 time.sleep(20)
-
-

@@ -82,14 +82,14 @@ def docker_ps(columns=['NAME'], list_all=True):
     cmd = 'docker ps -a' if list_all else 'docker ps'
     lines = [l for l in exec_cmd(cmd).split('\n') if l]
     title = lines[0]
-    cseq = [c.strip() for c in re.split('  ', title) if c.strip()]
-    neighbour_dict = dict(zip(cseq,cseq[1:]))
+    column_names = [c.strip() for c in re.split('  ', title) if c.strip()]
+    successors = dict(zip(column_names, column_names[1:]))
     for line in lines[1:]:
         vs = []
         for c in columns:
             beg = title.index(c)
-            if c in neighbour_dict:
-                end = title.index(neighbour_dict[c])
+            if c in successors:
+                end = title.index(successors[c])
                 vs.append(line[beg:end].strip())
             else:
                 vs.append(line[beg:].strip())
