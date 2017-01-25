@@ -1,0 +1,9 @@
+#!/bin/bash
+INTERNAL_IP=10.10.128.69
+DATA_DIR='/mnt1/etcd'
+mkdir ${DATA_DIR}
+CMD="etcd -name $(hostname) --data-dir ${DATA_DIR} \
+ -listen-client-urls http://${INTERNAL_IP}:2379,http://127.0.0.1:4001 \
+ -advertise-client-urls http://${INTERNAL_IP}:2379"
+exec setuidgid root ${CMD}>/dev/null
+
