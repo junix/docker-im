@@ -83,4 +83,4 @@ def docker_ps(column='NAME', list_all=True):
     column_offset = lines[0].index(column)
     for c in lines[1:]:
         if len(c) > column_offset:
-            yield c[column_offset]
+            yield c[column_offset:]
