@@ -25,7 +25,7 @@ def compact(raw):
 
 def exec_cmd(cmd):
     out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
-    return out
+    return out.decode('utf-8')
 
 
 def run(cmd, dryrun=False):
@@ -52,7 +52,7 @@ def network_of(name):
 
 def ip_of(name, index):
     ip_offset = int(os.getenv('IP_OFFSET', '1'))
-    return re.sub('0$', str(index+ip_offset), network_of(name))
+    return re.sub('0$', str(index + ip_offset), network_of(name))
 
 
 def assigned(res):
@@ -61,7 +61,7 @@ def assigned(res):
 
 def assigned_ip_list_of(name):
     cmd = 'calicoctl ipam show --ip={ip}'
-    for index in range(1,255):
+    for index in range(1, 255):
         ip = ip_of(name, index)
         res = exec_cmd(cmd.format(ip=ip))
         if assigned(res):
@@ -70,8 +70,17 @@ def assigned_ip_list_of(name):
 
 def free_ip_list_of(name):
     cmd = 'calicoctl ipam show --ip={ip}'
-    for index in range(1,255):
+    for index in range(1, 255):
         ip = ip_of(name, index)
         res = exec_cmd(cmd.format(ip=ip))
         if not assigned(res):
             yield ip
+
+
+def docker_ps(column='NAME', list_all=True):
+    cmd = 'docker ps -a' if list_all else 'docker ps'
+    lines = exec_cmd(cmd).split('\n')
+    column_offset = lines[0].index(column)
+    for c in lines[1:]:
+        if len(c) > column_offset:
+            yield c[column_offset]

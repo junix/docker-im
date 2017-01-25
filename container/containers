@@ -4,11 +4,5 @@ import utils
 from container import Container
 
 if __name__ == '__main__':
-    cmd = 'docker ps -a'
-    containers = utils.exec_cmd(cmd).split('\n')
-    title = containers[0]
-    names_offset = title.index('NAMES')
-    cs = [c[names_offset:] for c in containers[1:] if c]
-    cs.sort()
-    for c in cs:
+    for c in utils.docker_ps(list_all=True):
         print(c)
