@@ -9,5 +9,5 @@ if __name__ == '__main__':
     optlist, _ = getopt.getopt(sys.argv[1:], 'ac:')
     options = dict(optlist)
     columns = options.get('-c', 'NAMES').split(',')
-    for c in utils.docker_ps(list_all='-a' in options, column=columns):
+    for c in utils.docker_ps(list_all='-a' in options, columns=columns):
         print(','.join(c))
