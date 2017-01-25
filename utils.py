@@ -85,6 +85,6 @@ def docker_ps(column='NAME', list_all=True):
     cs = cs[cs.index(column):]
     for c in lines[1:]:
         if len(cs) > 1:
-            yield c[cs[0]:cs[1]]
+            yield c[cs[0]:cs[1]].strip()
         else:
-            yield c[cs[0]:]
+            yield c[cs[0]:].strip()
