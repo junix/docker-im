@@ -27,9 +27,7 @@ if __name__ == '__main__':
     log = logging.getLogger(__name__)
     optlist, args = getopt.getopt(sys.argv[1:], 'c:', [])
     options = dict(optlist)
-    conf = '/etc/container-monitor.conf'
-    if options.get('-c'):
-        conf = options.get('-c')
+    conf = options.get('-c') if '-c' in options else '/etc/container-monitor.conf'
     while True:
         time.sleep(20)
         ecs = set(existed_containers())
