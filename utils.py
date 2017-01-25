@@ -80,8 +80,7 @@ def free_ip_list_of(name):
 def docker_ps(column='NAME', list_all=True):
     cmd = 'docker ps -a' if list_all else 'docker ps'
     lines = exec_cmd(cmd).split('\n')
-    schema = lines[0].split('')
-    cs = re.split('\W+', schema)
+    cs = re.split('\W+', lines[0])
     cs = cs[cs.index(column):]
     for c in lines[1:]:
         if len(cs) > 1:
