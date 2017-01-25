@@ -79,7 +79,7 @@ def free_ip_list_of(name):
 
 def docker_ps(column='NAME', list_all=True):
     cmd = 'docker ps -a' if list_all else 'docker ps'
-    lines = exec_cmd(cmd).split('\n')
+    lines = [l for l in exec_cmd(cmd).split('\n') if l]
     title = lines[0]
     cs = re.split('\W+', title)
     cs = cs[cs.index(column.upper()):]
