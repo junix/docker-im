@@ -78,9 +78,9 @@ def free_ip_list_of(name):
 
 
 def docker_ps(columns=['NAME'], list_all=True):
-    columns = [c.upper for c in columns]
+    columns = [c.upper() for c in columns]
     cmd = 'docker ps -a' if list_all else 'docker ps'
-    lines = [l for l in exec_cmd(cmd).decode('utf-8').split('\n') if l]
+    lines = [l for l in exec_cmd(cmd).split('\n') if l]
     title = lines[0]
     cseq = re.split('\W+', title)
     neighbour_dict = dict(zip(cseq,cseq[1:]))
