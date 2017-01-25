@@ -20,7 +20,9 @@ def existed_containers():
 def monitored_containers():
     with open(conf, 'r') as f:
         for line in f:
-            yield line.strip()
+            cname = line.strip()
+            if cname:
+                yield cname
 
 
 if __name__ == '__main__':
