@@ -77,16 +77,22 @@ def free_ip_list_of(name):
             yield ip
 
 
-def docker_ps(column='NAME', list_all=True):
+def docker_ps(columns=['NAME'], list_all=True):
+    columns = [c.upper for c in columns]
     cmd = 'docker ps -a' if list_all else 'docker ps'
     lines = [l for l in exec_cmd(cmd).split('\n') if l]
     title = lines[0]
-    column = column.upper()
-    slice_from = title.index(column)
-    cs = re.split('\W+', title)
-    cs = cs[cs.index(column)+1:]
-    for c in lines[1:]:
-        if cs:
-            yield c[slice_from:title.index(cs[0])].strip()
-        else:
-            yield c[slice_from:].strip()
+    cseq = re.split('\W+', title)
+    neighbour_dict = dict(zip(cseq,cseq[1:]))
+    for line in lines[1:]:
+        vs = []
+        for c in columns:
+            beg = title.index(c)
+            if c in network_dict:
+                end = title.index(neighbour_dict[c])
+                vs.append(line[beg:end].strip())
+            else:
+                vs.append(line[beg:].strip())
+        yield vs
+
+

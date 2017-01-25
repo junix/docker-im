@@ -8,6 +8,6 @@ from container import Container
 if __name__ == '__main__':
     optlist, _ = getopt.getopt(sys.argv[1:], 'ac:')
     options = dict(optlist)
-    column = options.get('-c', 'NAMES')
-    for c in utils.docker_ps(list_all='-a' in options, column=column):
-        print(c)
+    columns = options.get('-c', 'NAMES').split(',')
+    for c in utils.docker_ps(list_all='-a' in options, column=columns):
+        print(','.join(c))
