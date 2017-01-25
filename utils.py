@@ -85,13 +85,11 @@ def docker_ps(columns=('NAME',), list_all=True):
     column_names = re.split('\s{2,}', title)
     stats_list = lines[1:]
     successors = dict(zip(column_names, column_names[1:]))
-    for line in stats_list:
+    successors_pos = dict([(k, title.index(v)) for k, v in successors.items()])
+    for s in stats_list:
         vs = []
         for c in columns:
             beg = title.index(c)
-            if c in successors:
-                end = title.index(successors[c])
-                vs.append(line[beg:end].strip())
-            else:
-                vs.append(line[beg:].strip())
-        yield vs
+            end = successors_pos.get(c)
+            vs.append(s[beg:] if end is None else s[beg:end])
+        yield [v.strip() for v in vs]
